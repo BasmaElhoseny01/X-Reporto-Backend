@@ -1,0 +1,23 @@
+# we use sqlalchemy to connect to the database
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+# we use the database url from the environment variable DATABASE_URL
+# SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://postgres:123456@localhost/dbname"
+# create the sqlalchemy engine
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+
+# create a sessionmaker
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# create the base class
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
