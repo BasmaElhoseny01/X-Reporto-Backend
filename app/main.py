@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from typing import Optional
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from app.models import patient
+from app.models import patient, employee, doctor, study, result, template
 from app.models.database import engine, Base, get_db
 
 Base.metadata.create_all(bind=engine)
