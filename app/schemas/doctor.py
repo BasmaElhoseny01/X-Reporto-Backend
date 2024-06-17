@@ -2,22 +2,24 @@ from pydantic import BaseModel
 from fastapi import Form
 from typing import Optional
 import datetime
-from app.models.enums import GenderEnum
+from app.models.enums import GenderEnum, RoleEnum
 
-class PatientBase(BaseModel):
-    patient_name: str
-    age: Optional[int] = None 
-    email: Optional[str] = None
+class DoctorBase(BaseModel):
+    username: str
+    password: str
+    doctor_name: Optional[str] = None
+    role:  Optional[str] = RoleEnum.user
+    age: Optional[int] = None
     birth_date: Optional[str] = None
     created_at: Optional[str] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     gender: Optional[str] = GenderEnum.male
-    phone_number : Optional[str] = None
+    phone_number: Optional[str] = None
+    email: Optional[str] = None
 
-    
-class PatientCreate(PatientBase):
+class DoctorCreate(DoctorBase):
     pass
 
-class Patient(PatientBase):
+class Doctor(DoctorBase):
     id: int
     
     class Config:

@@ -5,25 +5,18 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.models import patient, employee, doctor, study, result, template
-from app.models.database import engine, Base, get_db
+from app.routers.v1 import patient
+from app.models.database import engine, Base
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+app.include_router(patient.router)
+
 @app.get("/")
 async def index():
-    return {"Hello": "World"}
-
-@app.get("/items/{item_id}/about")
-async def read_item(item_id: int):
-    return {"item_id": item_id}
-
-@app.get("/items/")
-async def read_item(limit: int = 10 , skip: int = 0, sort: Optional[str] = None, db: Session = Depends(get_db)):
-    return {"limit": limit, "skip": skip, "sort": sort}
-
-
+    return "Welcome to the X-Reporto API"
 
 
 if __name__ == "__main__":
