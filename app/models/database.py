@@ -2,6 +2,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import database_exists, create_database
 
 # we use the database url from the environment variable DATABASE_URL
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -21,3 +22,15 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def create_database_if_not_exists():
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)
+    if not database_exists(engine.url):
+        create_database(engine.url)
+        print(f"Database created at {SQLALCHEMY_DATABASE_URL}")
+    else:
+        print("Database already exists")
+
+    # Create tables
+    Base.metadata.create_all(bind=engine)

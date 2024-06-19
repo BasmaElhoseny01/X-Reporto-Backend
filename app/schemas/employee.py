@@ -4,8 +4,6 @@ import datetime
 from app.models.enums import GenderEnum, RoleEnum
 
 class EmployeeBase(BaseModel):
-    username: str
-    password: str
     employee_name: Optional[str] = None
     role:  Optional[str] = RoleEnum.user
     age: Optional[int] = None
@@ -16,11 +14,24 @@ class EmployeeBase(BaseModel):
     email: Optional[str] = None
 
 class EmployeeCreate(EmployeeBase):
+    password: str
+    username: str
+
+
+class EmployeeUpdate(EmployeeBase):
     pass
 
 class Employee(EmployeeBase):
     id: int
-    
+    username: str
+    class Config:
+        # allow population of ORM model
+        orm_mode = True
+        allow_population_by_field_name = True
+
+class EmployeeShow(EmployeeBase):
+    id: int
+    username: str
     class Config:
         # allow population of ORM model
         orm_mode = True

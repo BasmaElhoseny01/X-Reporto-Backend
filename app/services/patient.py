@@ -25,7 +25,12 @@ class PatientService:
         patient = self.patient_repo.show(id)
         if not patient:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Patient with id {id} not found")
-        patient = Patient(**patient)
+        # update the patient
+        for key, value in patient_data.items():
+            setattr(patient,key,value)
+            
+        self.patient_repo.update(patient)
+        return patient
     
     def show(self,id:int) -> Optional[Patient]:
         return self.patient_repo.show(id)

@@ -5,8 +5,6 @@ import datetime
 from app.models.enums import GenderEnum, RoleEnum
 
 class DoctorBase(BaseModel):
-    username: str
-    password: str
     doctor_name: Optional[str] = None
     role:  Optional[str] = RoleEnum.user
     age: Optional[int] = None
@@ -17,10 +15,24 @@ class DoctorBase(BaseModel):
     email: Optional[str] = None
 
 class DoctorCreate(DoctorBase):
+    password: str
+    username: str
+
+class DoctorUpdate(DoctorBase):
     pass
 
 class Doctor(DoctorBase):
     id: int
+    password: str
+    username: str
+    class Config:
+        # allow population of ORM model
+        orm_mode = True
+        allow_population_by_field_name = True
+
+class DoctorShow(DoctorBase):
+    id: int
+    username: str
     
     class Config:
         # allow population of ORM model

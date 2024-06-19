@@ -3,3 +3,8 @@ pydantic
 uvicorn
 ppsycopg2
 pydantic-sqlalchemy
+sqlalchemy-utils
+passlib
+bcrypt
+python-jose
+python-multipart

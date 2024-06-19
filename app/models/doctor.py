@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy import Column, Integer, String, Enum, Boolean
 from sqlalchemy.orm import relationship
 from app.models.database import Base
 from app.models.enums import GenderEnum, RoleEnum
@@ -19,6 +19,7 @@ class Doctor(Base):
     gender = Column(Enum(GenderEnum), default=GenderEnum.male)
     phone_number = Column(String)
     email = Column(String)
+    is_deleted = Column(Boolean, default=False)
 
     studies = relationship("Study", back_populates="doctor")
     templates = relationship("Template", back_populates="doctor")

@@ -1,0 +1,47 @@
+from fastapi import APIRouter, Depends, HTTPException
+from app.models import database
+from app.schemas import template as template_schema
+from app.services.template import TemplateService
+from typing import List
+from sqlalchemy.orm import Session
+from app.dependencies import get_template_service
+
+# Create a new APIRouter instance
+router = APIRouter(
+    tags=["Templates"],
+    prefix="/templates",
+)
+
+# Define a route for the employee list
+@router.get("/")
+async def read_templates(limit: int = 10, skip: int = 0, sort: str = None, template_service: TemplateService = Depends(get_template_service) ) -> List[template_schema.Template]:
+    templates = template_service.get_all()
+    return templates
+
+# Define a route for creating a new employee
+@router.post("/")
+async def create_templates(request: template_schema.TemplateCreate, template_service: TemplateService = Depends(get_template_service)) -> template_schema.Template:
+    template = template_service.create(request.dict())
+    return template
+
+# Define a route for getting a single employee
+@router.get("/{template_id}")
+async def read_template(template_id: int, template_service: TemplateService = Depends(get_template_service)) -> template_schema.Template:
+    template = template_service.show(template_id)
+    if not template:
+        raise HTTPException(status_code=404, detail=f"Template with id {template_id} not found")
+    return template
+
+# Define a route for updating an employee
+@router.put("/{template_id}")
+async def update_template(template_id: int, request: template_schema.TemplateUpdate, template_service: TemplateService = Depends(get_template_service)) -> template_schema.Template:
+    template = template_service.update(template_id, request.dict())
+    return template
+
+# Define a route for deleting an employee
+@router.delete("/{template_id}")
+async def delete_template(template_id: int, template_service: TemplateService = Depends(get_template_service)) -> bool:
+    deleted = template_service.destroy(template_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail=f"Template with id {template_id} not found")
+    return deleted

@@ -20,6 +20,7 @@ class Result(Base):
     last_edited_at = Column(String, default = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     study_id = Column(Integer, ForeignKey("studies.id"), nullable=False)
 
+    study = relationship("Study", back_populates="results")
 
 
 
