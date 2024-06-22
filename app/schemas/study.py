@@ -14,13 +14,16 @@ class StudyBase(BaseModel):
     xray_path: Optional[str] = None
     xray_type: Optional[str] = None
     severity: Optional[int] = 0
-    archived = Optional[bool] =False
+    archived: Optional[bool] =False
     patient_id: int
     doctor_id: Optional[int] = None
     employee_id: Optional[int] = None
 
 
 class StudyCreate(StudyBase):
+    pass
+
+class StudyUpdate(StudyBase):
     pass
 
 class Study(StudyBase):
@@ -30,3 +33,6 @@ class Study(StudyBase):
         # allow population of ORM model
         orm_mode = True
         allow_population_by_field_name = True
+
+class StudyShow(Study):
+    pass

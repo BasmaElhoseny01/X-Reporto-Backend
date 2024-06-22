@@ -18,6 +18,9 @@ class ResultBase(BaseModel):
 class ResultCreate(ResultBase):
     pass
 
+class ResultUpdate(ResultBase):
+    pass
+
 class Result(ResultBase):
     id: int
     
@@ -25,3 +28,6 @@ class Result(ResultBase):
         # allow population of ORM model
         orm_mode = True
         allow_population_by_field_name = True
+
+class ResultShow(Result):
+    pass

@@ -6,11 +6,15 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from app.schemas.authentication import TokenData
+from fastapi import HTTPException, Security
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import bcrypt
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+security = HTTPBearer()
 
 class AuthenticationService:
     def __init__(self, employee_repo: EmployeeRepository):
@@ -53,4 +57,26 @@ class AuthenticationService:
         return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     
     def verify_password(self, password: str, hashed_password: str) -> bool:
-        return bcrypt.checkpw(password.encode(), hashed_password.encode())
+        try:
+            return bcrypt.checkpw(password.encode(), hashed_password.encode())
+        except:
+            return False
+
+    @staticmethod
+    def decrypt_token(token: str) -> dict:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            print("payload", payload)
+            username = payload.get("username",None)
+            if username is None:
+                raise  HTTPException(status_code=401, detail=f"Unauthorized user not found")
+            token_data = TokenData(username=username)
+        except JWTError:
+            print("error")
+            raise HTTPException(status_code=401, detail=f"Unauthorized token invalid")
+        return token_data
+
+    @staticmethod
+    def get_current_user(credentials: HTTPAuthorizationCredentials = Security(security)):
+        token = credentials.credentials
+        return AuthenticationService.decrypt_token(token)

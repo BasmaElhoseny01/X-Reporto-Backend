@@ -17,7 +17,8 @@ class Study(Base):
     severity = Column(Integer)
     xray_path = Column(String)
     xray_type = Column(String) # This should be an Enum
-    archived = Column(Boolean, default=False)
+    is_archived = Column(Boolean, default=False)
+    is_deleted = Column(Boolean, default=False)
     last_view_at = Column(String, default = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     last_edited_at = Column(String, default = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     # last_edited_by = Column(Integer, ForeignKey("doctors.id"))

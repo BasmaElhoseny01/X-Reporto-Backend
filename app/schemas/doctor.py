@@ -13,7 +13,8 @@ class DoctorBase(BaseModel):
     gender: Optional[str] = GenderEnum.male
     phone_number: Optional[str] = None
     email: Optional[str] = None
-
+    employee_id: Optional[int] = None
+    
 class DoctorCreate(DoctorBase):
     password: str
     username: str

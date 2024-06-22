@@ -6,6 +6,8 @@ class TemplateBase(BaseModel):
     template_name: Optional[str] = None
     template_path: Optional[str] = None
     doctor_id: Optional[int] = None
+    last_view_at: Optional[str] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    last_edited_at: Optional[str] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 class TemplateCreate(TemplateBase):
     created_at: Optional[str] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

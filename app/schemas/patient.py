@@ -13,8 +13,9 @@ class PatientBase(BaseModel):
     gender: Optional[str] = GenderEnum.male
     phone_number : Optional[str] = None
     employee_id: Optional[int] = None
+    assigned_doctor_id: Optional[int] = None
 
-    
+
 class PatientCreate(PatientBase):
     pass
 

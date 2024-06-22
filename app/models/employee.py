@@ -21,6 +21,7 @@ class Employee(Base):
     email = Column(String)
     is_deleted = Column(Boolean, default=False)
 
+    doctor = relationship("Doctor", back_populates="employee")
     patients = relationship("Patient", back_populates="employee")
     studies = relationship("Study", back_populates="employee")
 

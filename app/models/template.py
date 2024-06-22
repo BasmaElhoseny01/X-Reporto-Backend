@@ -13,6 +13,8 @@ class Template(Base):
     template_path = Column(String)
     created_at = Column(String, default = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     used_count = Column(Integer, default=0)
+    last_edited_at = Column(String, default = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    last_view_at = Column(String, default = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
     doctor_id = Column(Integer, ForeignKey("doctors.id"))
     doctor = relationship("Doctor", back_populates="templates")
