@@ -1,17 +1,19 @@
 from pydantic import BaseModel
 from typing import Optional
 import datetime
-from app.models.enums import GenderEnum, RoleEnum
+from app.models.enums import GenderEnum, RoleEnum, OccupationEnum
 
 class EmployeeBase(BaseModel):
     employee_name: Optional[str] = None
     role:  Optional[str] = RoleEnum.user
+    type: Optional[str] = OccupationEnum.employee
     age: Optional[int] = None
     birth_date: Optional[str] = None
     created_at: Optional[str] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     gender: Optional[str] = GenderEnum.male
     phone_number: Optional[str] = None
     email: Optional[str] = None
+    employee_id: Optional[int] = None
 
 class EmployeeCreate(EmployeeBase):
     password: str

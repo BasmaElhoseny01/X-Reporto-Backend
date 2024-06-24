@@ -19,10 +19,7 @@ class Patient(Base):
     email = Column(String)
     employee_id = Column(Integer, ForeignKey('employees.id'), nullable=True)
     is_deleted = Column(Boolean, default=False)
-    assigned_doctor_id = Column(Integer, ForeignKey('doctors.id'), nullable=True)
-    assigned_at = Column(String, default = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-    assigned_doctor = relationship("Doctor", back_populates="patients")
     employee = relationship("Employee", back_populates="patients")
     studies = relationship("Study", back_populates="patient")
 

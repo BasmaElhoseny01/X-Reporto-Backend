@@ -25,13 +25,18 @@ class Study(Base):
     # last_viewed_by = Column(Integer, ForeignKey("doctors.id"))
 
     patient_id = Column(Integer, ForeignKey("patients.id"), nullable=False)
-    doctor_id = Column(Integer, ForeignKey("doctors.id"))
-    employee_id = Column(Integer, ForeignKey("employees.id"))
-    
     patient = relationship("Patient", back_populates="studies")
-    doctor = relationship("Doctor", back_populates="studies")
-    employee = relationship("Employee", back_populates="studies")
+
+    doctor_id = Column(Integer, ForeignKey("employees.id"))
+    doctor = relationship("Employee", foreign_keys=[doctor_id], back_populates="assigned_studies")
+
+    employee_id = Column(Integer, ForeignKey("employees.id"))
+    employee = relationship("Employee", foreign_keys=[employee_id], back_populates="studies")
+
+
     results = relationship("Result", back_populates="study")
+
+    activities = relationship("Activity", back_populates="study")
     # doctor_last_edited = relationship("Doctor", foreign_keys=[last_edited_by])
     # doctor_last_viewed = relationship("Doctor", foreign_keys=[last_viewed_by])
 

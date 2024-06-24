@@ -15,7 +15,21 @@ class RoleEnum(str, Enum):
     manager = "manager"
     user = "user"
 
+class OccupationEnum(str, Enum):
+    doctor = "doctor"
+    employee = "employee"
+
 class ResultTypeEnum(str, Enum):
     template = "template"
     llm = "llm"
     custom = "custom"
+
+class ActivityEnum(str, Enum):
+    view = "view"
+    edit = "edit"
+    delete = "delete"
+    create = "create"
+    assign = "assign"
+    unassign = "unassign"
+    archive = "archive"
+    unarchive = "unarchive"

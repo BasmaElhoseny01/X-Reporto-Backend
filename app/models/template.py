@@ -16,8 +16,8 @@ class Template(Base):
     last_edited_at = Column(String, default = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     last_view_at = Column(String, default = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-    doctor_id = Column(Integer, ForeignKey("doctors.id"))
-    doctor = relationship("Doctor", back_populates="templates")
+    doctor_id = Column(Integer, ForeignKey("employees.id"))
+    doctor = relationship("Employee", back_populates="templates")
 
 
 
