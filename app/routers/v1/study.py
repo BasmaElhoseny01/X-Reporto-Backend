@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Security, File, UploadFile
 from app.models import database
+from app.models.enums import StatusEnum
 from app.schemas import study as study_schema, authentication as auth_schema, result as result_schema
 from app.services.study import StudyService
 from typing import List
@@ -15,8 +16,8 @@ router = APIRouter(
 
 # Define a route for the employee list
 @router.get("/", dependencies=[Security(security)])
-async def read_studies(user: auth_schema.TokenData  = Depends(get_current_user),limit: int = 10, skip: int = 0, sort: str = None, study_Service: StudyService = Depends(get_study_service) ) -> List[study_schema.StudyShow]:
-    studies = study_Service.get_all()
+async def read_studies(user: auth_schema.TokenData  = Depends(get_current_user),status: StatusEnum = StatusEnum.new, limit: int = 10, skip: int = 0, sort: str = None, study_Service: StudyService = Depends(get_study_service) ) -> List[study_schema.StudyShow]:
+    studies = study_Service.get_all(status, limit, skip, sort)
     return studies
 
 # Define a route for creating a new employee
@@ -103,3 +104,5 @@ async def update_result(study_id: int, result_id: int, request: result_schema.Re
 @router.delete("/{study_id}/results/{result_id}", dependencies=[Security(security)])
 async def delete_result(study_id: int, result_id: int, user: dict = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
     return study_Service.delete_result(study_id, result_id)
+
+# Define a route for getting studies of certain status attribute in study

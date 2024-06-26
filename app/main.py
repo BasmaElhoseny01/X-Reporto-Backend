@@ -6,9 +6,10 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.middleware.authentication import security
-from app.models import patient, employee, doctor, study, result, template
-from app.routers.v1 import patient, employee, authentication, doctor, template, study
+from app.models import patient, employee, study, result, template, activity
+from app.routers.v1 import patient, employee, authentication, template, study, activity
 from app.models.database import engine, Base, create_database_if_not_exists
+from app.core.config import configs
 
 
 
@@ -19,14 +20,14 @@ app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-prefix = "/api/v1"
+prefix = configs.API_V1_STR
 app.include_router(authentication.router, prefix= prefix)
 app.include_router(patient.router, prefix= prefix)
 app.include_router(employee.router, prefix= prefix)
-app.include_router(doctor.router, prefix= prefix)
+# app.include_router(doctor.router, prefix= prefix)
 app.include_router(template.router, prefix= prefix)
 app.include_router(study.router, prefix= prefix)
-
+app.include_router(activity.router, prefix= prefix)
 
 @app.get("/")
 async def index():
@@ -34,7 +35,7 @@ async def index():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=9000)
+    uvicorn.run(app, host="127.0.0.1", port=configs.PORT)
 '''
 Now, you can run the application using the following command:
 python app/main.py

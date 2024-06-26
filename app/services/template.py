@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException,status
+from fastapi.responses import FileResponse
 from app.repository.template import TemplateRepository
 from app.models.template import Template
 from typing import List, Optional
@@ -53,3 +54,7 @@ class TemplateService:
         template.last_edited_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.template_repo.update(template)
         return template
+    def download_template(self,template: Template) -> FileResponse:
+        if not template.template_path:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Template file not found")
+        return FileResponse(template.template_path)

@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from typing import Optional
-import datetime
 from app.models.enums import GenderEnum, RoleEnum
 
 class SignUp(BaseModel):

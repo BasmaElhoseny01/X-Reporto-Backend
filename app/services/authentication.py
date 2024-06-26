@@ -8,11 +8,9 @@ from jose import JWTError, jwt
 from app.schemas.authentication import TokenData
 from fastapi import HTTPException, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from app.core.config import configs
 import bcrypt
 
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 security = HTTPBearer()
 
@@ -22,14 +20,14 @@ class AuthenticationService:
     
     def create_access_token(self,data: dict) -> dict:
         to_encode = data.copy()
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.utcnow() + timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES)
         to_encode.update({"exp": expire})
-        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+        encoded_jwt = jwt.encode(to_encode, configs.SECRET_KEY, algorithm=configs.ALGORITHM)
         return {"access_token": encoded_jwt, "token_type": "bearer"}
 
     def verify_token(self,token: str, credentials_exception: HTTPException):
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            payload = jwt.decode(token, configs.SECRET_KEY, algorithms=[configs.ALGORITHM])
             username: str = payload.get("sub")
             if username is None:
                 raise credentials_exception
@@ -65,7 +63,7 @@ class AuthenticationService:
     @staticmethod
     def decrypt_token(token: str) -> dict:
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            payload = jwt.decode(token, configs.SECRET_KEY, algorithms=[configs.ALGORITHM])
             print("payload", payload)
             username = payload.get("username",None)
             if username is None:

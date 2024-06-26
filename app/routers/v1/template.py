@@ -6,6 +6,7 @@ from typing import List
 from sqlalchemy.orm import Session
 from app.dependencies import get_template_service
 from app.middleware.authentication import get_current_user, security
+from fastapi.responses import FileResponse
 
 
 # Create a new APIRouter instance
@@ -54,3 +55,11 @@ async def upload_template(template_id: int, file: UploadFile = File(...), user: 
     if not template:
         raise HTTPException(status_code=404, detail=f"Template with id {template_id} not found")
     return template_service.upload_template(template, file)
+
+# return actual file
+@router.get("/{template_id}/download_template", dependencies=[Security(security)])
+async def download_template(template_id: int, user: auth_schema.TokenData  = Depends(get_current_user), template_service: TemplateService = Depends(get_template_service)) -> FileResponse:
+    template = template_service.show(template_id)
+    if not template:
+        raise HTTPException(status_code=404, detail=f"Template with id {template_id} not found")
+    return template_service.download_template(template)

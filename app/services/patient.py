@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException,status
 from app.repository.patient import PatientRepository
 from app.models.patient import Patient
+from app.models.enums import StatusEnum
 from typing import List, Optional
 
 
@@ -34,3 +35,6 @@ class PatientService:
     
     def show(self,id:int) -> Optional[Patient]:
         return self.patient_repo.show(id)
+    
+    def show_with_studies(self,id:int,status: StatusEnum, limit: int, skip: int, sort: str) -> Optional[Patient]:
+        return self.patient_repo.show_with_studies(id,status, limit, skip, sort)

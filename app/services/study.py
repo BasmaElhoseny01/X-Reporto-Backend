@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException,status
 from app.repository.study import StudyRepository
 from app.models.study import Study
+from app.models.enums import StatusEnum
 from typing import List, Optional
 import datetime
 import os
@@ -12,8 +13,8 @@ class StudyService:
     def __init__(self, study_repo: StudyRepository):
         self.study_repo = study_repo
     
-    def get_all(self) -> List[Study]:
-        return self.study_repo.get_all()
+    def get_all(self,status: StatusEnum, limit: int, skip: int , sort: str) -> List[Study]:
+        return self.study_repo.get_all(status, limit, skip, sort)
     
     def create(self,study: dict) -> Study:
         # create a new study
@@ -36,6 +37,9 @@ class StudyService:
     
     def show(self,id:int) -> Optional[Study]:
         return self.study_repo.show(id)
+    
+    def get_patient_studies(self,patient_id:int, status: StatusEnum, limit: int, skip: int, sort: str) -> List[Study]:
+        return self.study_repo.get_patient_studies(patient_id,status, limit, skip, sort)
     
     def upload_image(self,study: Study,file) -> Study:
         # check if file is an image or dicom file

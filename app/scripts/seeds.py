@@ -2,10 +2,10 @@ from app.models import database
 from app.models.study import Study
 from app.models.patient import Patient
 from app.models.employee import Employee
-from app.models.doctor import Doctor
 from app.models.result import Result
 from app.models.template import Template
-from app.models.enums import GenderEnum, RoleEnum, ResultTypeEnum, StatusEnum
+from app.models.activity import Activity
+from app.models.enums import GenderEnum, RoleEnum, ResultTypeEnum, StatusEnum, OccupationEnum
 import bcrypt
 
 if __name__ == "__main__":
@@ -38,6 +38,7 @@ if __name__ == "__main__":
         employee_name="Ahmed Hosny",
         age=24,
         birth_date="2001-04-08",
+        employee_id=admin.id
     )
 
     db.add(employee)
@@ -45,13 +46,14 @@ if __name__ == "__main__":
     db.refresh(employee)
 
     # add doctor
-    doctor1 = Doctor(
+    doctor1 = Employee(
         employee_id=employee.id,
         username="basma",
         email="basma@gmail.com",
         password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode(),
-        doctor_name="Basma",
+        employee_name="Basma",
         role = RoleEnum.admin,
+        type = OccupationEnum.doctor,
         gender = GenderEnum.female,
         age=24,
         birth_date="2001-04-08",
@@ -61,13 +63,14 @@ if __name__ == "__main__":
     db.commit()
     db.refresh(doctor1)
 
-    doctor2 = Doctor(
+    doctor2 = Employee(
         employee_id=employee.id,
         username="zeinab",
         email="zeinab@gmail.com",
         password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode(),
-        doctor_name="Zeinab",
+        employee_name="Zeinab",
         role = RoleEnum.admin,
+        type = OccupationEnum.doctor,
         gender = GenderEnum.female,
         age=24,
         birth_date="2001-04-08",
@@ -85,8 +88,7 @@ if __name__ == "__main__":
             birth_date="2001-04-08",
             gender=GenderEnum.male,
             phone_number="01000000000",
-            employee_id=employee.id,
-            assigned_doctor_id=doctor1.id
+            employee_id=employee.id
         ),
         Patient(
             patient_name="Ali",
@@ -94,8 +96,7 @@ if __name__ == "__main__":
             birth_date="2001-04-08",
             gender=GenderEnum.male,
             phone_number="01000000000",
-            employee_id=employee.id,
-            assigned_doctor_id=doctor1.id
+            employee_id=employee.id
         ),
         Patient(
             patient_name="Fatma",
@@ -103,8 +104,7 @@ if __name__ == "__main__":
             birth_date="2001-04-08",
             gender=GenderEnum.female,
             phone_number="01000000000",
-            employee_id=employee.id,
-            assigned_doctor_id=doctor2.id
+            employee_id=employee.id
         )
     ]
 
@@ -139,12 +139,12 @@ if __name__ == "__main__":
         Study(
             patient_id=patients[0].id,
             doctor_id=doctor1.id,
-            study_name="Study 1",
+            study_name="archived study",
             notes="Notes 1",
             severity=1,
             xray_path="xray.png",
             xray_type="type1",
-            status = StatusEnum.new
+            status = StatusEnum.archived
         ),
         Study(
             patient_id=patients[1].id,
@@ -164,6 +164,36 @@ if __name__ == "__main__":
             severity=3,
             xray_path="xray.png",
             xray_type="type3",
+            status = StatusEnum.new
+        ),
+        Study(
+            patient_id=patients[0].id,
+            doctor_id=doctor1.id,
+            study_name="completed study",
+            notes="Notes 1",
+            severity=1,
+            xray_path="xray.png",
+            xray_type="type1",
+            status = StatusEnum.completed
+        ),
+        Study(
+            patient_id=patients[0].id,
+            doctor_id=doctor1.id,
+            study_name="in progress study",
+            notes="Notes 1",
+            severity=1,
+            xray_path="xray.png",
+            xray_type="type1",
+            status = StatusEnum.in_progress
+        ),
+        Study(
+            patient_id=patients[0].id,
+            doctor_id=doctor1.id,
+            study_name="new study",
+            notes="Notes 1",
+            severity=1,
+            xray_path="xray.png",
+            xray_type="type1",
             status = StatusEnum.new
         )
     ]
