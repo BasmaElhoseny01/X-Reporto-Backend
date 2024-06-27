@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Security, File, UploadFil
 from app.models import database
 from app.models.enums import StatusEnum
 from app.schemas import study as study_schema, authentication as auth_schema, result as result_schema
+from app.schemas import patient_study as patient_study_schema
 from app.services.study import StudyService
 from typing import List
 from sqlalchemy.orm import Session
@@ -28,7 +29,7 @@ async def create_studies(request: study_schema.StudyCreate, user: dict = Depends
 
 # Define a route for getting a single employee
 @router.get("/{study_id}", dependencies=[Security(security)])
-async def read_study(study_id: int,user: dict = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> study_schema.StudyShow:
+async def read_study(study_id: int,user: dict = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> patient_study_schema.PatientStudy:
     study = study_Service.show(study_id)
     if not study:
         raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")

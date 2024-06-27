@@ -2,8 +2,9 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 from app.models.enums import StatusEnum
+from app.schemas.patient import Patient
 
-class StudyBase(BaseModel):
+class PatientStudy(BaseModel):
     study_name: Optional[str] = None
     status:  Optional[str] = StatusEnum.new
     notes: Optional[str] = None
@@ -14,25 +15,14 @@ class StudyBase(BaseModel):
     xray_path: Optional[str] = None
     xray_type: Optional[str] = None
     severity: Optional[int] = 0
+    is_archived: Optional[bool] =False
     patient_id: Optional[int] = None
     doctor_id: Optional[int] = None
     employee_id: Optional[int] = None
-
-
-class StudyCreate(StudyBase):
-    patient_id: int
-    pass
-
-class StudyUpdate(StudyBase):
-    pass
-
-class Study(StudyBase):
+    patient: Optional[Patient] = None
     id: int
     
     class Config:
         # allow population of ORM model
         orm_mode = True
         allow_population_by_field_name = True
-
-class StudyShow(Study):
-    pass

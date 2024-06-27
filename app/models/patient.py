@@ -20,7 +20,7 @@ class Patient(Base):
     employee_id = Column(Integer, ForeignKey('employees.id'), nullable=True)
     is_deleted = Column(Boolean, default=False)
 
-    employee = relationship("Employee", back_populates="patients")
-    studies = relationship("Study", back_populates="patient")
+    employee = relationship("Employee", back_populates="patients", lazy="noload")
+    studies = relationship("Study", back_populates="patient", lazy="noload")
 
 

@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 from fastapi import HTTPException,status
 from app.models.study import Study
+from app.models.patient import Patient
 from app.models.enums import StatusEnum
 from typing import List, Optional
 
@@ -52,9 +53,17 @@ class StudyRepository:
     
     
     def show(self,id:int) ->  Optional[Study]:
+        # populate the patient
         study = self.db.query(Study).filter(Study.id == id).first()
         if not study:
             return None
+        
+        # request the patient to be loaded
+        patient = self.db.query(Patient).filter(Patient.id == study.patient_id).first()
+
+        # assign the patient to the study
+        study.patient = patient
+
         return study
     
     def get_patient_studies(self,patient_id:int,status: StatusEnum, limit: int, skip: int, sort: str) -> List[Study]:

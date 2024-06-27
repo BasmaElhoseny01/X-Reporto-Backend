@@ -56,7 +56,10 @@ class Configs(BaseSettings):
     #     database=ENV_DATABASE_MAPPER[ENV],
     # )
     # SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://postgres:123456@localhost/dbname"
-    SQLALCHEMY_DATABASE_URL = str = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:123456@localhost/dbname")
+    SQLALCHEMY_DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:123456@localhost/dbname")
+    
+    # elasticsearch
+    ELASTICSEARCH_URL: str = os.getenv("ELASTICSEARCH_URL", "http://localhost:9200")
     class Config:
         case_sensitive = True
 

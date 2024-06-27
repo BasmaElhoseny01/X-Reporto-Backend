@@ -10,6 +10,7 @@ from app.models import patient, employee, study, result, template, activity
 from app.routers.v1 import patient, employee, authentication, template, study, activity
 from app.models.database import engine, Base, create_database_if_not_exists
 from app.core.config import configs
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
@@ -17,6 +18,16 @@ create_database_if_not_exists()
 # Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

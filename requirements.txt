@@ -1,7 +1,7 @@
 fastapi
 pydantic
 uvicorn
-ppsycopg2
+psycopg2
 pydantic-sqlalchemy
 sqlalchemy-utils
 passlib
@@ -10,3 +10,4 @@ python-jose
 python-multipart
 python-dotenv
 alembic
+elasticsearch
