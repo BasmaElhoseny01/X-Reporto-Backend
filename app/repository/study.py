@@ -103,3 +103,25 @@ class StudyRepository:
         study.update({"is_archived":False})
         self.db.commit()
         return True , "Study unarchived successfully"
+
+    def assign_doctor(self,study_id:int, doctor_id:int) -> bool:
+        study = self.db.query(Study).filter(Study.id == study_id)
+        if not study.first():
+            return False, 
+        
+        # check if the doctor is already assigned
+        if study.first().doctor_id:
+            return False, "Doctor already assigned to study"
+        
+        study.update({"doctor_id":doctor_id, "status":StatusEnum.in_progress})
+        self.db.commit()
+        return True
+    
+    def unassign_doctor(self,study_id:int) -> bool:
+        study = self.db.query(Study).filter(Study.id == study_id)
+        if not study.first():
+            return False, "Study not found"
+        
+        study.update({"doctor_id":None, "status":StatusEnum.new})
+        self.db.commit()
+        return True, "Doctor unassigned successfully"

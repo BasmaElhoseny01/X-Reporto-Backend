@@ -72,3 +72,15 @@ class StudyService:
         if not success:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=message)
         return True
+    
+    def assign_doctor(self,study_id:int, doctor_id:int) -> bool:
+        success, message = self.study_repo.assign_doctor(study_id, doctor_id)
+        if not success:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=message)
+        return True
+    
+    def unassign_doctor(self,study_id:int, doctor_id:int) -> bool:
+        success, message = self.study_repo.unassign_doctor(study_id, doctor_id)
+        if not success:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=message)
+        return True

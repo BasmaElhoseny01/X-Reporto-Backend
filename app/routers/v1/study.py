@@ -77,6 +77,8 @@ async def assign_doctor(study_id: int, user: dict = Depends(get_current_user), s
     # check if user is doctor and is assigned to the study
     if user["role"] != "doctor":
         raise HTTPException(status_code=403, detail="You are not allowed to assign a doctor to a study")
+    
+    # make
     return study_Service.assign_doctor(study_id, user["id"])
 
 @router.post("/{study_id}/unassign", dependencies=[Security(security)])
