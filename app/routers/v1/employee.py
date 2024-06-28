@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Security
 from app.models import database
 from app.schemas import employee as employee_schema, authentication as auth_schema, error as error_schema
+from app.models.enums import OccupationEnum
 from app.services.employee import EmployeeService
 from typing import List, Union
 from sqlalchemy.orm import Session
@@ -19,8 +20,8 @@ router = APIRouter(
             responses={400: {"model": error_schema.Error},
                        200: {"description": "Employees retrieved successfully"},
                        401: {"model": error_schema.Error}})
-async def read_employees(limit: int = 10, skip: int = 0, sort: str = None,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service) ) -> List[employee_schema.EmployeeShow]:
-    employees = employee_Service.get_all()
+async def read_employees(type: OccupationEnum = None ,limit: int = 10, skip: int = 0, sort: str = None,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service) ) -> List[employee_schema.EmployeeShow]:
+    employees = employee_Service.get_all(type)
     return employees
 
 # Define a route for creating a new employee

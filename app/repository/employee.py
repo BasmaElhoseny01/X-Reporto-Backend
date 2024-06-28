@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException,status
 from app.models.employee import Employee
+from app.models.enums import OccupationEnum
 from typing import List, Optional
 
 
@@ -8,8 +9,11 @@ class EmployeeRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_all(self) -> List[Employee]:
-        employees = self.db.query(Employee).all()
+    def get_all(self,type: OccupationEnum) -> List[Employee]:
+        query = self.db.query(Employee)
+        if type:
+            query = query.filter(Employee.type == type)
+        employees = query.all()
         return employees
     
     def create(self,employee: Employee) -> Employee:

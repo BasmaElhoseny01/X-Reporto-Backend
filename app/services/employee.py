@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException,status
 from app.repository.employee import EmployeeRepository
 from app.models.employee import Employee
+from app.models.enums import OccupationEnum
 from typing import List, Optional
 
 
@@ -10,8 +11,8 @@ class EmployeeService:
     def __init__(self, employee_repo: EmployeeRepository):
         self.employee_repo = employee_repo
     
-    def get_all(self) -> List[Employee]:
-        return self.employee_repo.get_all()
+    def get_all(self,type: OccupationEnum ) -> List[Employee]:
+        return self.employee_repo.get_all(type)
     
     def create(self,employee: dict) -> Employee:
         # create a new patient
