@@ -21,7 +21,7 @@ router = APIRouter(
                        200: {"description": "Employees retrieved successfully"},
                        401: {"model": error_schema.Error}})
 async def read_employees(type: OccupationEnum = None ,limit: int = 10, skip: int = 0, sort: str = None,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service) ) -> List[employee_schema.EmployeeShow]:
-    employees = employee_Service.get_all(type)
+    employees = employee_Service.get_all(type, limit, skip, sort)
     return employees
 
 # Define a route for creating a new employee

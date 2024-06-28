@@ -11,8 +11,8 @@ class EmployeeService:
     def __init__(self, employee_repo: EmployeeRepository):
         self.employee_repo = employee_repo
     
-    def get_all(self,type: OccupationEnum ) -> List[Employee]:
-        return self.employee_repo.get_all(type)
+    def get_all(self,type: OccupationEnum, limit: int, skip: int, sort: str) -> List[Employee]:
+        return self.employee_repo.get_all(type, limit, skip, sort)
     
     def create(self,employee: dict) -> Employee:
         # create a new patient

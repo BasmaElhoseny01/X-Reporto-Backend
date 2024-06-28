@@ -9,10 +9,20 @@ class EmployeeRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_all(self,type: OccupationEnum) -> List[Employee]:
+    def get_all(self,type: OccupationEnum, limit: int, skip: int, sort: str) -> List[Employee]:
         query = self.db.query(Employee)
         if type:
             query = query.filter(Employee.type == type)
+        if sort:
+            sort_key = sort.lstrip("-")
+            if sort.startswith("-"):
+                query = query.order_by(getattr(Employee,sort_key).desc())
+            else:
+                query = query.order_by(getattr(Employee,sort_key))
+        if limit:
+            query = query.limit(limit)
+        if skip:
+            query = query.offset(skip)
         employees = query.all()
         return employees
     
