@@ -24,7 +24,7 @@ async def read_patients(limit: int = 10, skip: int = 0, sort: str = None,user: a
 # Define a route for creating a new patient
 @router.post("/", dependencies=[Security(security)])
 async def create_patient(request: patient_schema.PatientCreate, user: auth_schema.TokenData  = Depends(get_current_user), patient_service: PatientService = Depends(get_patient_service)) -> patient_schema.Patient:
-    request["employee_id"] = user.id
+    request.employee_id = user.id
     patient = patient_service.create(request.dict())
     return patient
 
