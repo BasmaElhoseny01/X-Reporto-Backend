@@ -28,9 +28,12 @@ class ResultTypeEnum(str, Enum):
 class ActivityEnum(str, Enum):
     view = "view"
     edit = "edit"
-    delete = "delete"
-    create = "create"
-    assign = "assign"
-    unassign = "unassign"
+    submit = "submit"
     archive = "archive"
     unarchive = "unarchive"
+    assign = "assign"
+    unassign = "unassign"
+    delete = "delete"
+    create = "create"
+
+

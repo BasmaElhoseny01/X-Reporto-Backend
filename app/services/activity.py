@@ -10,8 +10,8 @@ class ActivityService:
     def __init__(self, activity_repo: ActivityRepository):
         self.activity_repo = activity_repo
     
-    def get_all(self) -> List[Activity]:
-        return self.activity_repo.get_all()
+    def get_all(self, doctor_id: int, limit: int, skip: int , sort: str) -> List[Activity]:
+        return self.activity_repo.get_all(doctor_id, limit, skip, sort)
     
     def create(self,activity: dict) -> Activity:
         # create a new patient

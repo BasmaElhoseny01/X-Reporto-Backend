@@ -8,9 +8,12 @@ class ActivityRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_all(self) -> List[Activity]:
+    def get_all(self,doctor_id: int, limit: int, skip: int , sort: str) -> List[Activity]:
         # get all studies non deleted or archived
-        activities = self.db.query(Activity).all()
+        query = self.db.query(Activity).filter(Activity.doctor_id == doctor_id)
+        if sort:
+            query = query.order_by(sort)
+        activities = query.offset(skip).limit(limit).all()
         return activities
     
     def create(self,activity: Activity) -> Activity:

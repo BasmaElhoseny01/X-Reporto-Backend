@@ -17,13 +17,17 @@ router = APIRouter(
 @router.get("/", dependencies=[Security(security)],
             response_model=List[activity_schema.Activity])
 async def read_activities(limit: int = 10, skip: int = 0, sort: str = None,user: auth_schema.TokenData  = Depends(get_current_user), activity_Service: ActivityService = Depends(get_activity_service) ) -> List[activity_schema.Activity]:
-    activities = activity_Service.get_all()
+    # check if user is not a doctor
+    if user.role != "doctor":
+        # raise error
+        raise HTTPException(status_code=401, detail="Unauthorized, only doctors can view activities")
+    activities = activity_Service.get_all(user.id, limit, skip, sort)
     return activities
 
 # Define a route for creating a new patient
 @router.post("/", dependencies=[Security(security)])
 async def create_activity(request: activity_schema.ActivityCreate, user: auth_schema.TokenData  = Depends(get_current_user), activity_Service: ActivityService = Depends(get_activity_service)) -> activity_schema.Activity:
-    request["employee_id"] = user.id
+    request.employee_id = user.id
     activity = activity_Service.create(request.dict())
     return activity
 

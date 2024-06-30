@@ -13,10 +13,10 @@ class Activity(Base):
     created_at = Column(DateTime, default = datetime.datetime.utcnow)
 
     study_id = Column(Integer, ForeignKey("studies.id"))
-    study = relationship("Study", back_populates="activities")
+    study = relationship("Study", back_populates="activities", lazy = "noload")
 
     employee_id = Column(Integer, ForeignKey("employees.id"))
-    employee = relationship("Employee", back_populates="activities")
+    employee = relationship("Employee", back_populates="activities", lazy = "noload")
 
 
     
