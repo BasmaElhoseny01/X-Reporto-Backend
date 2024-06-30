@@ -14,6 +14,15 @@ router = APIRouter(
     prefix="/employees",
 )
 
+
+# Define a route for me
+@router.get("/me", dependencies=[Security(security)], response_model= employee_schema.EmployeeShow,
+            responses={401: {"model": error_schema.Error},
+                       200: {"description": "User retrieved successfully"}})
+async def read_me(user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service) ) -> employee_schema.EmployeeShow:
+    employee = employee_Service.show(user.id)
+    return employee
+
 # Define a route for the employee list
 @router.get("/", dependencies=[Security(security)],
             response_model= List[employee_schema.EmployeeShow],
