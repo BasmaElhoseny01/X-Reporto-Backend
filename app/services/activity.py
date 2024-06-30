@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException,status
 from app.repository.activity import ActivityRepository
 from app.models.activity import Activity
+from app.models.enums import ActivityEnum
 from typing import List, Optional
 
 
@@ -10,8 +11,8 @@ class ActivityService:
     def __init__(self, activity_repo: ActivityRepository):
         self.activity_repo = activity_repo
     
-    def get_all(self, doctor_id: int, limit: int, skip: int , sort: str) -> List[Activity]:
-        return self.activity_repo.get_all(doctor_id, limit, skip, sort)
+    def get_all(self, doctor_id: int,activity_type: ActivityEnum, limit: int, skip: int , sort: str) -> List[Activity]:
+        return self.activity_repo.get_all(doctor_id,activity_type, limit, skip, sort)
     
     def create(self,activity: dict) -> Activity:
         # create a new patient

@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException,status
 from app.repository.study import StudyRepository
+from app.repository.activity import ActivityRepository
 from app.models.study import Study
-from app.models.enums import StatusEnum
+from app.models.enums import StatusEnum, ActivityEnum
 from typing import List, Optional
 import datetime
 import os
@@ -10,8 +11,9 @@ import os
 
 
 class StudyService:
-    def __init__(self, study_repo: StudyRepository):
+    def __init__(self, study_repo: StudyRepository, activity_repo: ActivityRepository):
         self.study_repo = study_repo
+        self.activity_repo = activity_repo
     
     def get_all(self,status: StatusEnum, limit: int, skip: int , sort: str) -> List[Study]:
         return self.study_repo.get_all(status, limit, skip, sort)
@@ -29,14 +31,59 @@ class StudyService:
         if not study:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Study with id {id} not found")
         
+        
+        # update the last edited time
+        study.last_edited_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         for key, value in study_data.items():
             setattr(study,key,value)
             
         self.study_repo.update(study)
+
+        # create a new activity
+        # check if status was updated
+        if "status" in study_data:
+            # check if the status was updated to completed
+            if study_data["status"] == StatusEnum.completed:
+                activity = {
+                    "employee_id": study.doctor_id,
+                    "study_id": id,
+                    "activity_type": ActivityEnum.submit
+                }
+            else:
+                activity = {
+                    "employee_id": study.doctor_id,
+                    "study_id": id,
+                    "activity_type": ActivityEnum.edit
+                }
+        else:
+            activity = {
+                "employee_id": study.doctor_id,
+                "study_id": id,
+                "activity_type": ActivityEnum.edit
+            }
+
+        self.activity_repo.create(activity)
         return study
     
     def show(self,id:int) -> Optional[Study]:
-        return self.study_repo.show(id)
+        study = self.study_repo.show(id)
+        if not study:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Study with id {id} not found")
+        
+        # update the last view time
+        study.last_view_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.study_repo.update(study)
+
+        # create a new activity
+        activity = {
+            "employee_id": study.doctor_id,
+            "study_id": id,
+            "activity_type": ActivityEnum.view
+        }
+
+        self.activity_repo.create(activity)
+        return study
     
     def get_patient_studies(self,patient_id:int, status: StatusEnum, limit: int, skip: int, sort: str) -> List[Study]:
         return self.study_repo.get_patient_studies(patient_id,status, limit, skip, sort)
@@ -65,22 +112,60 @@ class StudyService:
         success, message = self.study_repo.archive(id, doctor_id)
         if not success:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=message)
+        
+        # create a new activity
+        activity = {
+            "employee_id": doctor_id,
+            "study_id": id,
+            "activity_type": ActivityEnum.archive
+        }
+
+        self.activity_repo.create(activity)
         return True
     
     def unarchive(self,id:int, doctor_id:int) -> bool:
         success, message = self.study_repo.unarchive(id, doctor_id)
         if not success:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=message)
+        
+        # create a new activity
+        activity = {
+            "employee_id": doctor_id,
+            "study_id": id,
+            "activity_type": ActivityEnum.unarchive
+        }
+
+        self.activity_repo.create(activity)
         return True
     
     def assign_doctor(self,study_id:int, doctor_id:int) -> bool:
         success, message = self.study_repo.assign_doctor(study_id, doctor_id)
         if not success:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=message)
+        
+        # create a new activity
+        activity = {
+            "employee_id": doctor_id,
+            "study_id": study_id,
+            "activity_type": ActivityEnum.assign
+        }
+
+        self.activity_repo.create(activity)
+
         return True
     
     def unassign_doctor(self,study_id:int, doctor_id:int) -> bool:
         success, message = self.study_repo.unassign_doctor(study_id, doctor_id)
         if not success:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=message)
+        
+        # create a new activity
+        activity = {
+            "employee_id": doctor_id,
+            "study_id": study_id,
+            "activity_type": ActivityEnum.unassign
+        }
+        
+        self.activity_repo.create(activity)
+
         return True

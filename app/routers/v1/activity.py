@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Security
 from app.models import database
+from app.models.enums import ActivityEnum
 from app.schemas import activity as activity_schema, authentication as auth_schema
 from app.services.activity import ActivityService 
 from typing import List
@@ -16,12 +17,12 @@ router = APIRouter(
 # Define a route for the patient list
 @router.get("/", dependencies=[Security(security)],
             response_model=List[activity_schema.Activity])
-async def read_activities(limit: int = 10, skip: int = 0, sort: str = None,user: auth_schema.TokenData  = Depends(get_current_user), activity_Service: ActivityService = Depends(get_activity_service) ) -> List[activity_schema.Activity]:
+async def read_activities(activity_type: ActivityEnum = None, limit: int = 10, skip: int = 0, sort: str = None,user: auth_schema.TokenData  = Depends(get_current_user), activity_Service: ActivityService = Depends(get_activity_service) ) -> List[activity_schema.Activity]:
     # check if user is not a doctor
     if user.role != "doctor":
         # raise error
         raise HTTPException(status_code=401, detail="Unauthorized, only doctors can view activities")
-    activities = activity_Service.get_all(user.id, limit, skip, sort)
+    activities = activity_Service.get_all(user.id,activity_type, limit, skip, sort)
     return activities
 
 # Define a route for creating a new patient
