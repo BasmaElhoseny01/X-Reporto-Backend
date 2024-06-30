@@ -13,6 +13,7 @@ from app.repository.template import TemplateRepository
 from app.services.template import TemplateService
 from app.repository.study import StudyRepository
 from app.services.study import StudyService
+from app.repository.activity import ActivityRepository
 
 def get_patient_repository(db: Session = Depends(get_db)) -> PatientRepository:
     return PatientRepository(db)
@@ -35,14 +36,15 @@ def get_template_repository(db: Session = Depends(get_db)) -> TemplateRepository
 def get_template_service(template_repository: TemplateRepository = Depends(get_template_repository)) -> TemplateService:
     return TemplateService(template_repository)
 
-def get_study_repository(db: Session = Depends(get_db)) -> StudyRepository:
-    return StudyRepository(db)
-
-def get_study_service(study_repository: StudyRepository = Depends(get_study_repository)) -> StudyService:
-    return StudyService(study_repository)
-
 def get_activity_repository(db: Session = Depends(get_db)) -> ActivityRepository:
-    return ActivityRepository(db)
+    return ActivityRepository(db,)
 
 def get_activity_service(activity_repository: ActivityRepository = Depends(get_activity_repository)) -> ActivityService:
     return ActivityService(activity_repository)
+
+def get_study_repository(db: Session = Depends(get_db)) -> StudyRepository:
+    return StudyRepository(db)
+
+def get_study_service(study_repository: StudyRepository = Depends(get_study_repository), activity_repository: ActivityRepository= Depends(get_activity_repository)) -> StudyService:
+    return StudyService(study_repository,activity_repository)
+
