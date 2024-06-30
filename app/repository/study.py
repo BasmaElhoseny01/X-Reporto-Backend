@@ -125,3 +125,7 @@ class StudyRepository:
         study.update({"doctor_id":None, "status":StatusEnum.new})
         self.db.commit()
         return True, "Doctor unassigned successfully"
+    
+    def get_assigned_studies(self,employee_id: int):
+        studies = self.db.query(Study).filter(Study.doctor_id == employee_id).all()
+        return studies

@@ -21,11 +21,18 @@ async def read_studies(user: auth_schema.TokenData  = Depends(get_current_user),
     studies = study_Service.get_all(status, limit, skip, sort)
     return studies
 
+
 # Define a route for creating a new employee
 @router.post("/", dependencies=[Security(security)])
 async def create_studies(request: study_schema.StudyCreate, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> study_schema.StudyShow:
     study = study_Service.create(request.dict())
     return study
+
+
+# define a route for getting assigned studies
+@router.get("/assigned", dependencies=[Security(security)])
+async def get_assigned_studies(user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> List[study_schema.StudyShow]:
+    return study_Service.get_assigned_studies(user.id)
 
 # Define a route for getting a single employee
 @router.get("/{study_id}", dependencies=[Security(security)])
@@ -62,7 +69,7 @@ async def archive_study(study_id: int, user: auth_schema.TokenData = Depends(get
     if user.role != "doctor":
         raise HTTPException(status_code=403, detail="You are not allowed to archive a study")
 
-    return study_Service.archive(study_id, user["id"])
+    return study_Service.archive(study_id, user.id)
 
 @router.post("/{study_id}/unarchive", dependencies=[Security(security)])
 async def unarchive_study(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
@@ -70,7 +77,7 @@ async def unarchive_study(study_id: int, user: auth_schema.TokenData = Depends(g
     if user.role != "doctor":
         raise HTTPException(status_code=403, detail="You are not allowed to unarchive a study")
 
-    return study_Service.unarchive(study_id, user["id"])
+    return study_Service.unarchive(study_id, user.id)
 
 @router.post("/{study_id}/assign", dependencies=[Security(security)]) 
 async def assign_doctor(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
@@ -79,14 +86,14 @@ async def assign_doctor(study_id: int, user: auth_schema.TokenData = Depends(get
         raise HTTPException(status_code=403, detail="You are not allowed to assign a doctor to a study")
     
     # make
-    return study_Service.assign_doctor(study_id, user["id"])
+    return study_Service.assign_doctor(study_id, user.id)
 
 @router.post("/{study_id}/unassign", dependencies=[Security(security)])
 async def unassign_doctor(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
     # check if user is doctor and is assigned to the study
     if user.role != "doctor":
         raise HTTPException(status_code=403, detail="You are not allowed to unassign a doctor from a study")
-    return study_Service.unassign_doctor(study_id, user["id"])
+    return study_Service.unassign_doctor(study_id, user.id)
 
 @router.get("/{study_id}/results", dependencies=[Security(security)])
 async def get_results(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> List[result_schema.ResultShow]:

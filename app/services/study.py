@@ -169,3 +169,6 @@ class StudyService:
         self.activity_repo.create(activity)
 
         return True
+    
+    def get_assigned_studies(self,employee_id: int) -> List[Study]:
+        return self.study_repo.get_assigned_studies(employee_id)
