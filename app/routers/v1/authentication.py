@@ -40,7 +40,7 @@ async def signup(request: authentication_schema.SignUp,authentication_service: A
                 "username": request.username,
                 "role": request.role,
                 "id": employee.id,
-                "type": "employee"
+                "type": employee.type
             }
         )
     # return token from schema
@@ -65,7 +65,7 @@ async def login(request: authentication_schema.Login,authentication_service: Aut
                 "username": request.username,
                 "role": employee.role,
                 "id": employee.id,
-                "type": "employee"
+                "type": employee.type
             }
         )
     

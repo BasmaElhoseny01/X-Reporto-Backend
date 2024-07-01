@@ -40,6 +40,8 @@ async def read_employees(type: OccupationEnum = None ,limit: int = 10, skip: int
                         201: {"description": "Employee created successfully"},
                         401: {"model": error_schema.Error}})
 async def create_employees(request: employee_schema.EmployeeCreate,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service)) -> employee_schema.Employee:
+    if user.role != "admin":
+        raise HTTPException(status_code=401, detail="You are not authorized to create an employee")
     employee = employee_Service.create(request.dict())
     return employee
 
@@ -71,6 +73,8 @@ async def update_employee(employee_id: int, request: employee_schema.EmployeeUpd
                             204: {"description": "Employee deleted successfully"},
                             401: {"model": error_schema.Error}})
 async def delete_employee(employee_id: int,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service)) -> bool:
+    if user.role != "admin":
+        raise HTTPException(status_code=401, detail="You are not authorized to delete an employee")
     deleted = employee_Service.destroy(employee_id)
     if not deleted:
         raise HTTPException(status_code=404, detail=f"Employee with id {employee_id} not found")

@@ -66,7 +66,7 @@ async def upload_image(study_id: int, file: UploadFile = File(...), user: auth_s
 @router.post("/{study_id}/archive", dependencies=[Security(security)])
 async def archive_study(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
     # check if user is doctor and is assigned to the study
-    if user.role != "doctor":
+    if user.type != "doctor":
         raise HTTPException(status_code=403, detail="You are not allowed to archive a study")
 
     return study_Service.archive(study_id, user.id)
@@ -74,7 +74,7 @@ async def archive_study(study_id: int, user: auth_schema.TokenData = Depends(get
 @router.post("/{study_id}/unarchive", dependencies=[Security(security)])
 async def unarchive_study(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
     # check if user is doctor and is assigned to the study
-    if user.role != "doctor":
+    if user.type != "doctor":
         raise HTTPException(status_code=403, detail="You are not allowed to unarchive a study")
 
     return study_Service.unarchive(study_id, user.id)
@@ -82,7 +82,7 @@ async def unarchive_study(study_id: int, user: auth_schema.TokenData = Depends(g
 @router.post("/{study_id}/assign", dependencies=[Security(security)]) 
 async def assign_doctor(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
     # check if user is doctor and is assigned to the study
-    if user.role != "doctor":
+    if user.type != "doctor":
         raise HTTPException(status_code=403, detail="You are not allowed to assign a doctor to a study")
     
     # make
@@ -91,7 +91,7 @@ async def assign_doctor(study_id: int, user: auth_schema.TokenData = Depends(get
 @router.post("/{study_id}/unassign", dependencies=[Security(security)])
 async def unassign_doctor(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
     # check if user is doctor and is assigned to the study
-    if user.role != "doctor":
+    if user.type != "doctor":
         raise HTTPException(status_code=403, detail="You are not allowed to unassign a doctor from a study")
     return study_Service.unassign_doctor(study_id, user.id)
 

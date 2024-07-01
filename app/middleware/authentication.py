@@ -27,7 +27,10 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Security(securi
     user =  decrypt_token(token)
 
     employee = employee_repo.show(user.id)
-    user.role = employee.role
+    user.type = employee.type
+    if user.role != employee.role:
+        raise HTTPException(status_code=401, detail="Unauthorized, user role does not match")
+
     if employee is None:
         raise HTTPException(status_code=401, detail="Employee not found")
     return user
