@@ -63,7 +63,6 @@ class StudyRepository:
 
         # assign the patient to the study
         study.patient = patient
-
         return study
     
     def get_patient_studies(self,patient_id:int,status: StatusEnum, limit: int, skip: int, sort: str) -> List[Study]:
@@ -88,6 +87,10 @@ class StudyRepository:
         if study.first().doctor_id != doctor_id:
             return False , "You are not allowed to archive this study"
         
+        # check if the study is already archived
+        if study.first().is_archived:
+            return False , "Study already archived"
+        
         study.update({"is_archived":True})
         self.db.commit()
         return True , "Study archived successfully"
@@ -99,6 +102,10 @@ class StudyRepository:
         
         if study.first().doctor_id != doctor_id:
             return False , "You are not allowed to unarchive this study"
+        
+        # check if the study is already unarchived
+        if not study.first().is_archived:
+            return False , "Study already unarchived"
         
         study.update({"is_archived":False})
         self.db.commit()

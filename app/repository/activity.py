@@ -11,7 +11,7 @@ class ActivityRepository:
 
     def get_all(self,doctor_id: int,activity_type: ActivityEnum, limit: int, skip: int , sort: str) -> List[Activity]:
         # get all studies non deleted or archived
-        query = self.db.query(Activity).filter(Activity.doctor_id == doctor_id)
+        query = self.db.query(Activity).filter(Activity.employee_id == doctor_id)
         if activity_type:
             query = query.filter(Activity.activity_type == activity_type)
         if sort:

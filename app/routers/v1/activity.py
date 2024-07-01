@@ -19,7 +19,7 @@ router = APIRouter(
             response_model=List[activity_schema.Activity])
 async def read_activities(activity_type: ActivityEnum = None, limit: int = 10, skip: int = 0, sort: str = None,user: auth_schema.TokenData  = Depends(get_current_user), activity_Service: ActivityService = Depends(get_activity_service) ) -> List[activity_schema.Activity]:
     # check if user is not a doctor
-    if user.role != "doctor":
+    if user.type != "doctor":
         # raise error
         raise HTTPException(status_code=401, detail="Unauthorized, only doctors can view activities")
     activities = activity_Service.get_all(user.id,activity_type, limit, skip, sort)

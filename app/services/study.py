@@ -3,6 +3,7 @@ from fastapi import HTTPException,status
 from app.repository.study import StudyRepository
 from app.repository.activity import ActivityRepository
 from app.models.study import Study
+from app.models.activity import Activity
 from app.models.enums import StatusEnum, ActivityEnum
 from typing import List, Optional
 import datetime
@@ -63,6 +64,8 @@ class StudyService:
                 "activity_type": ActivityEnum.edit
             }
 
+        activity = Activity(**activity)
+        
         self.activity_repo.create(activity)
         return study
     
@@ -82,6 +85,8 @@ class StudyService:
             "activity_type": ActivityEnum.view
         }
 
+        activity = Activity(**activity)
+        
         self.activity_repo.create(activity)
         return study
     
@@ -120,6 +125,8 @@ class StudyService:
             "activity_type": ActivityEnum.archive
         }
 
+        activity = Activity(**activity)
+        
         self.activity_repo.create(activity)
         return True
     
@@ -135,6 +142,8 @@ class StudyService:
             "activity_type": ActivityEnum.unarchive
         }
 
+        activity = Activity(**activity)
+        
         self.activity_repo.create(activity)
         return True
     
@@ -150,6 +159,8 @@ class StudyService:
             "activity_type": ActivityEnum.assign
         }
 
+
+        activity = Activity(**activity)
         self.activity_repo.create(activity)
 
         return True
@@ -165,6 +176,8 @@ class StudyService:
             "study_id": study_id,
             "activity_type": ActivityEnum.unassign
         }
+
+        activity = Activity(**activity)
         
         self.activity_repo.create(activity)
 
