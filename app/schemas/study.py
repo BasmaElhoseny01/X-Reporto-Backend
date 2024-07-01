@@ -36,3 +36,7 @@ class Study(StudyBase):
 
 class StudyShow(Study):
     pass
+
+class countStudy(BaseModel):
+    count: int
+    pass

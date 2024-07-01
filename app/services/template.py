@@ -38,12 +38,9 @@ class TemplateService:
         return self.template_repo.show(id)
 
     def upload_template(self,template: Template,file) -> Template:
-        # check if file is word or docx file
-        if not file.content_type.startswith("application/vnd.openxmlformats-officedocument.wordprocessingml.document"):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Invalid file type. Only word files are allowed")
         
         # save the file to the file system and update the template file_path
-        file_path = f"static/templates/{template.id}/template.docx"
+        file_path = f"static/templates/{template.id}/{file.filename}"
 
         # create the file path and nested directories
         os.makedirs(os.path.dirname(file_path), exist_ok=True)

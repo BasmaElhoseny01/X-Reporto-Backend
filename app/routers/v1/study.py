@@ -95,6 +95,30 @@ async def unassign_doctor(study_id: int, user: auth_schema.TokenData = Depends(g
         raise HTTPException(status_code=403, detail="You are not allowed to unassign a doctor from a study")
     return study_Service.unassign_doctor(study_id, user.id)
 
+# define a route for gettinng count of new studies
+@router.get("/new/count", dependencies=[Security(security)])
+async def get_new_studies_count(user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> study_schema.countStudy:
+    return study_Service.get_new_studies_count()
+
+# define a route for getting count of incomplete studies
+@router.get("/incomplete/count", dependencies=[Security(security)])
+async def get_incomplete_studies_count(user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> study_schema.countStudy:
+    return study_Service.get_incomplete_studies_count()
+
+# define a route for getting count of my pending studies
+@router.get("/pending/count", dependencies=[Security(security)])
+async def get_pending_studies_count(user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> study_schema.countStudy:
+    if user.type != "doctor":
+        raise HTTPException(status_code=403, detail="You are not allowed to view pending studies")
+    return study_Service.get_pending_studies_count(user.id)
+
+# define a route for getting count of my completed studies
+@router.get("/completed/count", dependencies=[Security(security)])
+async def get_completed_studies_count(user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) ->study_schema.countStudy:
+    if user.type != "doctor":
+        raise HTTPException(status_code=403, detail="You are not allowed to view completed studies")
+    return study_Service.get_completed_studies_count(user.id)
+
 @router.get("/{study_id}/results", dependencies=[Security(security)])
 async def get_results(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> List[result_schema.ResultShow]:
     return study_Service.get_results(study_id)

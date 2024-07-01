@@ -185,3 +185,19 @@ class StudyService:
     
     def get_assigned_studies(self,employee_id: int) -> List[Study]:
         return self.study_repo.get_assigned_studies(employee_id)
+    
+    def get_new_studies_count(self) -> dict:
+        count = self.study_repo.get_new_studies_count()
+        return {"count":count}
+    
+    def get_incomplete_studies_count(self) -> dict:
+        count = self.study_repo.get_incomplete_studies_count()
+        return {"count":count}
+    
+    def get_pending_studies_count(self,doctor_id:int) -> dict:
+        count = self.study_repo.get_pending_studies_count(doctor_id)
+        return {"count":count}
+    
+    def get_completed_studies_count(self,doctor_id:int) -> dict:
+        count = self.study_repo.get_completed_studies_count(doctor_id)
+        return {"count":count}

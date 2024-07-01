@@ -136,3 +136,20 @@ class StudyRepository:
     def get_assigned_studies(self,employee_id: int):
         studies = self.db.query(Study).filter(Study.doctor_id == employee_id).all()
         return studies
+
+    def get_new_studies_count(self):
+        return self.db.query(Study).filter(Study.status == StatusEnum.new).count()
+   
+    
+    def get_incomplete_studies_count(self):
+        # get new and in progress studies
+        return self.db.query(Study).filter(Study.status.in_([StatusEnum.new,StatusEnum.in_progress])).count()
+        
+
+    def get_pending_studies_count(self,doctor_id:int):
+        return self.db.query(Study).filter(Study.doctor_id == doctor_id, Study.status == StatusEnum.in_progress).count()
+        
+    
+    def get_completed_studies_count(self,doctor_id:int):
+        return self.db.query(Study).filter(Study.doctor_id == doctor_id, Study.status == StatusEnum.completed).count()
+   
