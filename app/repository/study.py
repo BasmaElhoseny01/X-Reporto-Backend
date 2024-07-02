@@ -88,10 +88,10 @@ class StudyRepository:
             return False , "You are not allowed to archive this study"
         
         # check if the study is already archived
-        if study.first().is_archived:
+        if study.first().status == StatusEnum.archived:
             return False , "Study already archived"
         
-        study.update({"is_archived":True})
+        study.update({"status":StatusEnum.archived})
         self.db.commit()
         return True , "Study archived successfully"
     
@@ -104,17 +104,17 @@ class StudyRepository:
             return False , "You are not allowed to unarchive this study"
         
         # check if the study is already unarchived
-        if not study.first().is_archived:
+        if not study.first().status == StatusEnum.archived:
             return False , "Study already unarchived"
         
-        study.update({"is_archived":False})
+        study.update({"status":StatusEnum.new})
         self.db.commit()
         return True , "Study unarchived successfully"
 
     def assign_doctor(self,study_id:int, doctor_id:int) -> bool:
         study = self.db.query(Study).filter(Study.id == study_id)
         if not study.first():
-            return False, 
+            return False, "Study not found"
         
         # check if the doctor is already assigned
         if study.first().doctor_id:
@@ -122,12 +122,16 @@ class StudyRepository:
         
         study.update({"doctor_id":doctor_id, "status":StatusEnum.in_progress})
         self.db.commit()
-        return True
+        return True, "Doctor assigned successfully"
     
-    def unassign_doctor(self,study_id:int) -> bool:
+    def unassign_doctor(self,study_id:int, doctor_id: int) -> bool:
         study = self.db.query(Study).filter(Study.id == study_id)
         if not study.first():
             return False, "Study not found"
+        
+
+        if study.first().doctor_id != doctor_id:
+            return False, "You are not allowed to unassign this study"
         
         study.update({"doctor_id":None, "status":StatusEnum.new})
         self.db.commit()
@@ -139,7 +143,6 @@ class StudyRepository:
 
     def get_new_studies_count(self):
         return self.db.query(Study).filter(Study.status == StatusEnum.new).count()
-   
     
     def get_incomplete_studies_count(self):
         # get new and in progress studies
@@ -152,4 +155,3 @@ class StudyRepository:
     
     def get_completed_studies_count(self,doctor_id:int):
         return self.db.query(Study).filter(Study.doctor_id == doctor_id, Study.status == StatusEnum.completed).count()
-   

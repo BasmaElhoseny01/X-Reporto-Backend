@@ -6,7 +6,7 @@ from app.models.study import Study
 from app.models.activity import Activity
 from app.models.enums import StatusEnum, ActivityEnum
 from typing import List, Optional
-import datetime
+from datetime import datetime
 import os
 
 
@@ -69,25 +69,26 @@ class StudyService:
         self.activity_repo.create(activity)
         return study
     
-    def show(self,id:int) -> Optional[Study]:
+    def show(self,id:int, is_doctor: bool = True) -> Optional[Study]:
         study = self.study_repo.show(id)
         if not study:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Study with id {id} not found")
         
         # update the last view time
-        study.last_view_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        study.last_view_at =  datetime.utcnow()
         self.study_repo.update(study)
 
-        # create a new activity
-        activity = {
-            "employee_id": study.doctor_id,
-            "study_id": id,
-            "activity_type": ActivityEnum.view
-        }
+        if study.doctor_id and is_doctor:
+            # create a new activity
+            activity = {
+                "employee_id": study.doctor_id,
+                "study_id": id,
+                "activity_type": ActivityEnum.view
+            }
 
-        activity = Activity(**activity)
-        
-        self.activity_repo.create(activity)
+            activity = Activity(**activity)
+            
+            self.activity_repo.create(activity)
         return study
     
     def get_patient_studies(self,patient_id:int, status: StatusEnum, limit: int, skip: int, sort: str) -> List[Study]:
@@ -108,8 +109,8 @@ class StudyService:
         
         study.xray_path = xray_path
         study.xray_type = "image"
-        study.last_edited_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        study.last_view_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        study.last_edited_at =  datetime.utcnow()
+        study.last_view_at =  datetime.utcnow()
         self.study_repo.update(study)
         return study
 

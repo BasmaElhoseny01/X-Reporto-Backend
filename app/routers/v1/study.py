@@ -58,7 +58,7 @@ async def delete_study(study_id: int, user: auth_schema.TokenData = Depends(get_
 
 @router.post("/{study_id}/upload_image", dependencies=[Security(security)])
 async def upload_image(study_id: int, file: UploadFile = File(...), user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> study_schema.StudyShow:
-    study = study_Service.show(study_id)
+    study = study_Service.show(study_id,False)
     if not study:
         raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")
     return study_Service.upload_image(study, file)
