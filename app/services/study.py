@@ -34,7 +34,7 @@ class StudyService:
         
         
         # update the last edited time
-        study.last_edited_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        study.last_edited_at = datetime.utcnow()
 
         for key, value in study_data.items():
             setattr(study,key,value)
