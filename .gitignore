@@ -22,8 +22,11 @@ images
 assets/*
 # Except for text files
 !assets/empty.txt
-static/*.png
-static/*.jpg
+static/*
+static/studies/*.*
+static/studies/*
+static/templates/*
+static/templates/*.*
 
 # Tests
 test.py

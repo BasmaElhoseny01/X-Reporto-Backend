@@ -144,11 +144,13 @@ if __name__ == "__main__":
             severity=1,
             xray_path="xray.png",
             xray_type="type1",
-            status = StatusEnum.archived
+            status = StatusEnum.archived,
+            employee_id=employee.id
         ),
         Study(
             patient_id=patients[1].id,
             doctor_id=doctor1.id,
+            employee_id=employee.id,
             study_name="Study 2",
             notes="Notes 2",
             severity=2,
@@ -159,6 +161,7 @@ if __name__ == "__main__":
         Study(
             patient_id=patients[2].id,
             doctor_id=doctor2.id,
+            employee_id=employee.id,
             study_name="Study 3",
             notes="Notes 3",
             severity=3,
@@ -169,6 +172,7 @@ if __name__ == "__main__":
         Study(
             patient_id=patients[0].id,
             doctor_id=doctor1.id,
+            employee_id=employee.id,
             study_name="completed study",
             notes="Notes 1",
             severity=1,
@@ -179,6 +183,7 @@ if __name__ == "__main__":
         Study(
             patient_id=patients[0].id,
             doctor_id=doctor1.id,
+            employee_id=employee.id,
             study_name="in progress study",
             notes="Notes 1",
             severity=1,
@@ -189,6 +194,7 @@ if __name__ == "__main__":
         Study(
             patient_id=patients[0].id,
             doctor_id=doctor1.id,
+            employee_id=employee.id,
             study_name="new study",
             notes="Notes 1",
             severity=1,
