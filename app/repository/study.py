@@ -133,12 +133,15 @@ class StudyRepository:
         if study.first().doctor_id != doctor_id:
             return False, "You are not allowed to unassign this study"
         
+        if study.first().status == StatusEnum.completed:
+            return False, "Study already completed"
+        
         study.update({"doctor_id":None, "status":StatusEnum.new})
         self.db.commit()
         return True, "Doctor unassigned successfully"
     
     def get_assigned_studies(self,employee_id: int):
-        studies = self.db.query(Study).filter(Study.doctor_id == employee_id).all()
+        studies = self.db.query(Study).filter(Study.doctor_id == employee_id, Study.status == StatusEnum.in_progress).all()
         return studies
 
     def get_new_studies_count(self):

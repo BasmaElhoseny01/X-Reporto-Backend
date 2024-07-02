@@ -149,7 +149,6 @@ if __name__ == "__main__":
         ),
         Study(
             patient_id=patients[1].id,
-            doctor_id=doctor1.id,
             employee_id=employee.id,
             study_name="Study 2",
             notes="Notes 2",
@@ -160,7 +159,6 @@ if __name__ == "__main__":
         ),
         Study(
             patient_id=patients[2].id,
-            doctor_id=doctor2.id,
             employee_id=employee.id,
             study_name="Study 3",
             notes="Notes 3",
@@ -193,7 +191,6 @@ if __name__ == "__main__":
         ),
         Study(
             patient_id=patients[0].id,
-            doctor_id=doctor1.id,
             employee_id=employee.id,
             study_name="new study",
             notes="Notes 1",
