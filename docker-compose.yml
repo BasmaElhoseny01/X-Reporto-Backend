@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    depends_on:
+      - db
+    volumes:
+      - ./:/code:ro
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://postgres:123456@db:5432/dbname
+      - PORT=8000
+      - ENV=dev
+      - SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+    ports:
+      - "8000:8000"
+
+  db:
+      image: postgres:15-alpine
+      volumes:
+        - postgres_data:/var/lib/postgresql/data/
+      expose:
+        - 5432
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=123456
+        - POSTGRES_DB=dbname
+
+volumes:
+      postgres_data:
