@@ -46,7 +46,9 @@ async def index():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=configs.PORT)
+    # uvicorn.run(app, host="0.0.0.0", port=configs.PORT) # for docker
+    uvicorn.run(app, host="127.0.0.1", port=configs.PORT)
+
 '''
 Now, you can run the application using the following command:
 python app/main.py

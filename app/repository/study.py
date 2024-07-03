@@ -141,7 +141,7 @@ class StudyRepository:
         return True, "Doctor unassigned successfully"
     
     def get_assigned_studies(self,employee_id: int):
-        studies = self.db.query(Study).filter(Study.doctor_id == employee_id, Study.status == StatusEnum.in_progress).all()
+        studies = self.db.query(Study).filter(Study.doctor_id == employee_id, Study.status.in_([StatusEnum.completed,StatusEnum.in_progress])).all()
         return studies
 
     def get_new_studies_count(self):
