@@ -10,7 +10,7 @@ from app.core.config import configs
 import bcrypt
 
 if __name__ == "__main__":
-    if configs.ENVIRONMENT == "production":
+    if configs.ENV == "production":
         print("Cannot seed database in production")
         exit()
     print("Seeding database")
@@ -217,7 +217,6 @@ if __name__ == "__main__":
             Result(
                 study_id=studies[0].id,
                 result_name="Result 1",
-                confidence="0.9",
                 report_path="report.pdf",
                 heatmap_path="heatmap.png",
                 region_path="region.png",
@@ -226,7 +225,6 @@ if __name__ == "__main__":
             Result(
                 study_id=studies[1].id,
                 result_name="Result 2",
-                confidence="0.8",
                 report_path="report.pdf",
                 heatmap_path="heatmap.png",
                 region_path="region.png",
@@ -235,7 +233,6 @@ if __name__ == "__main__":
             Result(
                 study_id=studies[2].id,
                 result_name="Result 3",
-                confidence="0.7",
                 report_path="report.pdf",
                 heatmap_path="heatmap.png",
                 region_path="region.png",

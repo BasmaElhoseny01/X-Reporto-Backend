@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Boolean, DateTime, ARRAY, Float
 from sqlalchemy.orm import relationship
 from app.models.database import Base
-from app.models.enums import StatusEnum, ResultTypeEnum
+from app.models.enums import  ResultTypeEnum
 import datetime
 
 
@@ -9,10 +9,10 @@ class Result(Base):
     __tablename__ = "results"
     
     id = Column(Integer, primary_key=True, index=True)
-    result_name = Column(String, index=True)
+    result_name = Column(String)
     type = Column(Enum(ResultTypeEnum), default=ResultTypeEnum.custom)
     created_at = Column(DateTime, default = datetime.datetime.utcnow)
-    confidence = Column(String)
+    confidence = Column(ARRAY(Float), default = None)
     xray_path = Column(String)
     report_path = Column(String)
     heatmap_path = Column(String)

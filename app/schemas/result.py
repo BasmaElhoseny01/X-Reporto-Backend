@@ -1,12 +1,12 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from app.models.enums import ResultTypeEnum
 
 class ResultBase(BaseModel):
     result_name: Optional[str] = None
     type:  Optional[str] = ResultTypeEnum.custom
-    confidence: Optional[str] = None
+    confidence: Optional[List[float]] = None
     last_view_at: Optional[datetime] = datetime.utcnow()
     last_edited_at: Optional[datetime] = datetime.utcnow()
     created_at: Optional[datetime] = datetime.utcnow()

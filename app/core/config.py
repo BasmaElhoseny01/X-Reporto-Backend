@@ -29,6 +29,7 @@ class Configs(BaseSettings):
     }
 
 
+
     # auth
     SECRET_KEY: str = os.getenv("SECRET_KEY", "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7")
     ALGORITHM = "HS256"
@@ -58,8 +59,12 @@ class Configs(BaseSettings):
     # SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://postgres:123456@localhost/dbname"
     SQLALCHEMY_DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:123456@localhost/dbname")
     
+
     # elasticsearch
     ELASTICSEARCH_URL: str = os.getenv("ELASTICSEARCH_URL", "http://localhost:9200")
+
+    # ai model
+    AI_MODEL_URL: str = os.getenv("AI_MODEL_URL", "http://localhost:8001")
     class Config:
         case_sensitive = True
 

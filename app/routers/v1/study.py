@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, Security, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Security, File, UploadFile, BackgroundTasks
 from app.models import database
-from app.models.enums import StatusEnum
+from app.models.enums import StatusEnum, ResultTypeEnum
 from app.schemas import study as study_schema, authentication as auth_schema, result as result_schema
 from app.schemas import patient_study as patient_study_schema
 from app.services.study import StudyService
+from app.services.ai import AIService
 from typing import List
 from sqlalchemy.orm import Session
-from app.dependencies import get_study_service
+from app.dependencies import get_study_service, get_ai_service, get_result_repository
 from app.middleware.authentication import get_current_user, security
 
 # Create a new APIRouter instance
@@ -119,6 +120,8 @@ async def get_completed_studies_count(user: auth_schema.TokenData = Depends(get_
         raise HTTPException(status_code=403, detail="You are not allowed to view completed studies")
     return study_Service.get_completed_studies_count(user.id)
 
+
+# Results endpoints
 @router.get("/{study_id}/results", dependencies=[Security(security)])
 async def get_results(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> List[result_schema.ResultShow]:
     return study_Service.get_results(study_id)
@@ -139,4 +142,48 @@ async def update_result(study_id: int, result_id: int, request: result_schema.Re
 async def delete_result(study_id: int, result_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
     return study_Service.delete_result(study_id, result_id)
 
-# Define a route for getting studies of certain status attribute in study
+
+@router.post("/{study_id}/run_llm")
+async def run_llm(study_id: int,
+                  user: auth_schema.TokenData = Depends(get_current_user),
+                  study_Service: StudyService = Depends(get_study_service),
+                  ai_service: AIService = Depends(get_ai_service),
+                  background: BackgroundTasks = BackgroundTasks()) -> result_schema.ResultShow:
+    
+    if user.type != "doctor":
+        raise HTTPException(status_code=403, detail="You are not allowed to run LLM model")
+    
+    # check if the study exists
+    study = study_Service.study_repo.show(study_id)
+
+    if not study:
+        raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")
+    
+    if study.doctor_id != user.id:
+        raise HTTPException(status_code=403, detail="You are not allowed to run LLM model for this study")
+    
+    if study.xray_path is None:
+        raise HTTPException(status_code=400, detail="X-ray image is required to run LLM model")
+    
+    print("running LLM model")
+    # get results for the study and check if the LLM model has already been run
+    # result = ai_service.get_result_by_study_type(study_id, ResultTypeEnum.llm)
+    result = None
+
+    if result:
+        raise HTTPException(status_code=400, detail="LLM model has already been run for this study")
+    
+    result = {
+            "study_id": study_id,
+            "xray_path": study.xray_path,
+            "type": ResultTypeEnum.llm,
+            "result_name": "GPT-2 generated report"
+        }
+
+    result = ai_service.create(result)
+
+    # Add the task to the background tasks queue
+    background.add_task(ai_service.run_llm, result.id, study.xray_path)
+    
+    # Return a response indicating the task is running
+    return result

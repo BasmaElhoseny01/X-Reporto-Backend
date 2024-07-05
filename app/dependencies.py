@@ -14,6 +14,9 @@ from app.services.template import TemplateService
 from app.repository.study import StudyRepository
 from app.services.study import StudyService
 from app.repository.activity import ActivityRepository
+from app.repository.result import ResultRepository
+from app.services.ai import AIService
+
 
 def get_patient_repository(db: Session = Depends(get_db)) -> PatientRepository:
     return PatientRepository(db)
@@ -48,3 +51,8 @@ def get_study_repository(db: Session = Depends(get_db)) -> StudyRepository:
 def get_study_service(study_repository: StudyRepository = Depends(get_study_repository), activity_repository: ActivityRepository= Depends(get_activity_repository)) -> StudyService:
     return StudyService(study_repository,activity_repository)
 
+def get_result_repository(db: Session = Depends(get_db)) -> ResultRepository:
+    return ResultRepository(db)
+
+def get_ai_service(study_repository: StudyRepository = Depends(get_study_repository), result_repository: ResultRepository = Depends(get_result_repository), activity_repository: ActivityRepository= Depends(get_activity_repository)) -> AIService:
+    return AIService(study_repository,result_repository,activity_repository)

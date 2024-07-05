@@ -1,0 +1,44 @@
+from fastapi import APIRouter, Depends, HTTPException, Security, File, UploadFile, BackgroundTasks
+from app.models import database
+from app.models.enums import StatusEnum, ResultTypeEnum
+from app.schemas import study as study_schema, authentication as auth_schema, result as result_schema
+from app.schemas import patient_study as patient_study_schema
+from app.services.study import StudyService
+from app.services.ai import AIService
+from typing import List
+from sqlalchemy.orm import Session
+from app.dependencies import get_study_service, get_ai_service
+from app.middleware.authentication import get_current_user, security
+from fastapi.responses import FileResponse
+
+# Create a new APIRouter instance
+router = APIRouter(
+    tags=["Results"],
+    prefix="/results",
+)
+
+# Results endpoints
+@router.get("/", dependencies=[Security(security)])
+async def get_results( user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service),type: ResultTypeEnum = None, limit: int = 10, skip: int = 0, sort: str = None) -> List[result_schema.ResultShow]:
+    return ai_service.get_all(type, limit, skip, sort)
+
+@router.post("/", dependencies=[Security(security)])
+async def create_result(request: result_schema.ResultCreate, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    return ai_service.create(request.dict())
+
+@router.get("/{result_id}", dependencies=[Security(security)])
+async def get_result(result_id: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    return ai_service.show(result_id)
+
+@router.put("/{result_id}", dependencies=[Security(security)])
+async def update_result(result_id: int, request: result_schema.ResultUpdate, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    return ai_service.update(result_id,request.dict())
+
+@router.delete("/{result_id}", dependencies=[Security(security)])
+async def delete_result( result_id: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> bool:
+    return ai_service.destroy(result_id)
+
+# get file with file_path
+@router.get("/download_file", dependencies=[Security(security)])
+async def download_file(file_path: str, user: auth_schema.TokenData = Depends(get_current_user)) -> FileResponse:
+    return FileResponse(file_path)
