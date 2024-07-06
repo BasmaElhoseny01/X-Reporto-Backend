@@ -184,6 +184,7 @@ async def run_llm(study_id: int,
 
     # Add the task to the background tasks queue
     background.add_task(ai_service.run_llm, result.id, study.xray_path)
+    background.add_task(ai_service.denoise, result.id, study.xray_path)
     
     # Return a response indicating the task is running
     return result
@@ -212,8 +213,8 @@ async def run_heatmap(study_id: int,
     
     print("running heatmap model")
     # get results for the study and check if the heatmap model has already been run
-    result = ai_service.get_result_by_study_type(study_id, ResultTypeEnum.heatmap)
-    # result = None
+    # result = ai_service.get_result_by_study_type(study_id, ResultTypeEnum.template)
+    result = None
 
     if result:
         raise HTTPException(status_code=400, detail="Heatmap model has already been run for this study")
@@ -222,7 +223,7 @@ async def run_heatmap(study_id: int,
             "study_id": study_id,
             "xray_path": study.xray_path,
             "type": ResultTypeEnum.template,
-            "result_name": "GPT-2 generated report"
+            "result_name": " Template based report with heatmaps"
         }
     
     result = ai_service.create(result)

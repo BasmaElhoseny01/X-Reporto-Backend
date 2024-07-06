@@ -13,6 +13,7 @@ from app.core.config import configs
 import os
 import requests
 import cv2
+import numpy as np
 
 
 
@@ -78,10 +79,10 @@ class AIService:
                     severity = response["severity"]
                     report = response["report"]
     
-                    # save the heatmap of shape (8.7,7) as an image
-                    heatmap_path = f"static/heatmaps/{result_id}_heatmap.png"
+                    # save the heatmap of shape (8.7,7) in correct format
+                    heatmap_path = f"static/heatmaps/{result_id}_heatmap"
                     os.makedirs(os.path.dirname(heatmap_path), exist_ok=True)
-                    cv2.imwrite(heatmap_path, heatmap)
+                    np.save(heatmap_path, heatmap)
 
                     # save the report
                     report_path = f"static/reports/{result_id}_report.txt"
@@ -109,18 +110,50 @@ class AIService:
                 # delete the result
                 self.result_repo.destroy(result_id)
 
+    def denoise(self, result_id: int, xray_path: str) -> Result:
+        # send the xray image to the AI model
+        url = configs.AI_MODEL_URL+"/x_reporto/denoise"
+
+        files = {'image': open(xray_path, 'rb')}
+
+        try:
+            response = requests.post(url, files=files, timeout=60)
+
+            print(response.status_code)
+
+            # if successful, save the heatmap
+            if response.status_code == 200:
+                
+                # response is file like object
+                response = response.content
+                nparr = np.frombuffer(response, np.uint8)
+                denoised_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+                # save the heatmap of shape (8.7,7) as an image
+                denoised_path = f"static/denoised/{result_id}_denoised.png"
+                os.makedirs(os.path.dirname(denoised_path), exist_ok=True)
+                cv2.imwrite(denoised_path, denoised_image)
+
+                # save the labels and confidence
+                result = self.result_repo.show(result_id)
+                result.xray_path = denoised_path
+                result.last_edited_at = datetime.utcnow()
+                result.last_view_at = datetime.utcnow()
+
+                self.result_repo.update(result)
+                print("Denoised image saved")
+        except Exception as e:
+            print(e)
+            # delete the result
+            self.result_repo.destroy(result_id)
     def run_llm(self , result_id: int, xray_path: str) -> Result:
 
         # send the xray image to the AI model
         url = configs.AI_MODEL_URL+"/x_reporto/report"
 
         files = {'image': open(xray_path, 'rb')}
-
-
         try:
-
             response = requests.post(url, files=files, timeout=60)
-
             print(response.status_code)
 
             # if successful, save the report and heatmap
@@ -172,4 +205,18 @@ class AIService:
         result.last_edited_at = datetime.utcnow()
         result.last_view_at = datetime.utcnow()
         return self.result_repo.update(result)
+    
+    def get_heatmap(self,result_id: int, label: int) -> str:
+        # get the result
+        result = self.result_repo.show(result_id)
+        if not result:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Result not found")
+        
+        # check if the heatmap exists
+        if not result.heatmap_path:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Heatmap not found")
+        
+        # load the heatmap
+        heatmap = np.load(result.heatmap_path)
+        
         
