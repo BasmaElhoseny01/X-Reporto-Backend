@@ -32,8 +32,8 @@ async def create_studies(request: study_schema.StudyCreate, user: auth_schema.To
 
 # define a route for getting assigned studies
 @router.get("/assigned", dependencies=[Security(security)])
-async def get_assigned_studies(user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> List[study_schema.StudyShow]:
-    return study_Service.get_assigned_studies(user.id)
+async def get_assigned_studies(user: auth_schema.TokenData = Depends(get_current_user),status: StatusEnum = None, limit: int = 10, skip: int = 0, sort: str = None, study_Service: StudyService = Depends(get_study_service)) -> List[study_schema.StudyShow]:
+    return study_Service.get_assigned_studies(user.id, status, limit, skip, sort)
 
 # Define a route for getting a single employee
 @router.get("/{study_id}", dependencies=[Security(security)])
@@ -122,25 +122,25 @@ async def get_completed_studies_count(user: auth_schema.TokenData = Depends(get_
 
 
 # Results endpoints
-@router.get("/{study_id}/results", dependencies=[Security(security)])
-async def get_results(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> List[result_schema.ResultShow]:
-    return study_Service.get_results(study_id)
+# @router.get("/{study_id}/results", dependencies=[Security(security)])
+# async def get_results(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> List[result_schema.ResultShow]:
+#     return study_Service.get_results(study_id)
 
-@router.post("/{study_id}/results", dependencies=[Security(security)])
-async def create_result(study_id: int, request: result_schema.ResultCreate, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> result_schema.ResultShow:
-    return study_Service.create_result(study_id, request.dict())
+# @router.post("/{study_id}/results", dependencies=[Security(security)])
+# async def create_result(study_id: int, request: result_schema.ResultCreate, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> result_schema.ResultShow:
+#     return study_Service.create_result(study_id, request.dict())
 
-@router.get("/{study_id}/results/{result_id}", dependencies=[Security(security)])
-async def get_result(study_id: int, result_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> result_schema.ResultShow:
-    return study_Service.get_result(study_id, result_id)
+# @router.get("/{study_id}/results/{result_id}", dependencies=[Security(security)])
+# async def get_result(study_id: int, result_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> result_schema.ResultShow:
+#     return study_Service.get_result(study_id, result_id)
 
-@router.put("/{study_id}/results/{result_id}", dependencies=[Security(security)])
-async def update_result(study_id: int, result_id: int, request: result_schema.ResultUpdate, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> result_schema.ResultShow:
-    return study_Service.update_result(study_id, result_id, request.dict())
+# @router.put("/{study_id}/results/{result_id}", dependencies=[Security(security)])
+# async def update_result(study_id: int, result_id: int, request: result_schema.ResultUpdate, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> result_schema.ResultShow:
+#     return study_Service.update_result(study_id, result_id, request.dict())
 
-@router.delete("/{study_id}/results/{result_id}", dependencies=[Security(security)])
-async def delete_result(study_id: int, result_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
-    return study_Service.delete_result(study_id, result_id)
+# @router.delete("/{study_id}/results/{result_id}", dependencies=[Security(security)])
+# async def delete_result(study_id: int, result_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
+#     return study_Service.delete_result(study_id, result_id)
 
 
 @router.post("/{study_id}/run_llm")
@@ -167,8 +167,8 @@ async def run_llm(study_id: int,
     
     print("running LLM model")
     # get results for the study and check if the LLM model has already been run
-    # result = ai_service.get_result_by_study_type(study_id, ResultTypeEnum.llm)
-    result = None
+    result = ai_service.get_result_by_study_type(study_id, ResultTypeEnum.llm)
+    # result = None
 
     if result:
         raise HTTPException(status_code=400, detail="LLM model has already been run for this study")
@@ -185,5 +185,50 @@ async def run_llm(study_id: int,
     # Add the task to the background tasks queue
     background.add_task(ai_service.run_llm, result.id, study.xray_path)
     
+    # Return a response indicating the task is running
+    return result
+
+@router.post("/{study_id}/run_heatmap")
+async def run_heatmap(study_id: int,
+                      user: auth_schema.TokenData = Depends(get_current_user),
+                      study_Service: StudyService = Depends(get_study_service),
+                      ai_service: AIService = Depends(get_ai_service),
+                      background: BackgroundTasks = BackgroundTasks()) -> result_schema.ResultShow:
+    
+    if user.type != "doctor":
+        raise HTTPException(status_code=403, detail="You are not allowed to run heatmap model")
+    
+    # check if the study exists
+    study = study_Service.study_repo.show(study_id)
+
+    if not study:
+        raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")
+    
+    if study.doctor_id != user.id:
+        raise HTTPException(status_code=403, detail="You are not allowed to run heatmap model for this study")
+    
+    if study.xray_path is None:
+        raise HTTPException(status_code=400, detail="X-ray image is required to run heatmap model")
+    
+    print("running heatmap model")
+    # get results for the study and check if the heatmap model has already been run
+    result = ai_service.get_result_by_study_type(study_id, ResultTypeEnum.heatmap)
+    # result = None
+
+    if result:
+        raise HTTPException(status_code=400, detail="Heatmap model has already been run for this study")
+    
+    result = {
+            "study_id": study_id,
+            "xray_path": study.xray_path,
+            "type": ResultTypeEnum.template,
+            "result_name": "GPT-2 generated report"
+        }
+    
+    result = ai_service.create(result)
+
+    # Add the task to the background tasks queue
+    background.add_task(ai_service.run_heatmap, result.id, study.xray_path)
+
     # Return a response indicating the task is running
     return result

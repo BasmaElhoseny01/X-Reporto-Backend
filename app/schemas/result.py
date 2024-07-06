@@ -7,13 +7,10 @@ class ResultBase(BaseModel):
     result_name: Optional[str] = None
     type:  Optional[str] = ResultTypeEnum.custom
     confidence: Optional[List[float]] = None
+    labels: Optional[List[int]] = None
     last_view_at: Optional[datetime] = datetime.utcnow()
     last_edited_at: Optional[datetime] = datetime.utcnow()
     created_at: Optional[datetime] = datetime.utcnow()
-    xray_path: Optional[str] 
-    region_path: Optional[str] 
-    heatmap_path: Optional[str] = None
-    report_path: Optional[str] = None
     study_id: int
 
 class ResultCreate(ResultBase):
@@ -24,7 +21,10 @@ class ResultUpdate(ResultBase):
 
 class Result(ResultBase):
     id: int
-    
+    xray_path: Optional[str] = None
+    region_path: Optional[str]  = None
+    heatmap_path: Optional[str] = None
+    report_path: Optional[str] = None
     class Config:
         # allow population of ORM model
         orm_mode = True

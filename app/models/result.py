@@ -13,6 +13,7 @@ class Result(Base):
     type = Column(Enum(ResultTypeEnum), default=ResultTypeEnum.custom)
     created_at = Column(DateTime, default = datetime.datetime.utcnow)
     confidence = Column(ARRAY(Float), default = None)
+    labels = Column(ARRAY(Integer), default = None)
     xray_path = Column(String)
     report_path = Column(String)
     heatmap_path = Column(String)

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.middleware.authentication import security
 from app.models import patient, employee, study, result, template, activity
-from app.routers.v1 import patient, employee, authentication, template, study, activity
+from app.routers.v1 import patient, employee, authentication, template, study, activity, result
 from app.models.database import engine, Base, create_database_if_not_exists
 from app.core.config import configs
 from fastapi.middleware.cors import CORSMiddleware
@@ -39,6 +39,7 @@ app.include_router(employee.router, prefix= prefix)
 app.include_router(template.router, prefix= prefix)
 app.include_router(study.router, prefix= prefix)
 app.include_router(activity.router, prefix= prefix)
+app.include_router(result.router, prefix= prefix)
 
 @app.get("/")
 async def index():

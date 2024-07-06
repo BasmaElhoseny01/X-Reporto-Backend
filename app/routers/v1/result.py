@@ -26,6 +26,12 @@ async def get_results( user: auth_schema.TokenData = Depends(get_current_user), 
 async def create_result(request: result_schema.ResultCreate, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
     return ai_service.create(request.dict())
 
+# get file with file_path
+@router.get("/download_file", dependencies=[Security(security)])
+async def download_file(file_path: str, user: auth_schema.TokenData = Depends(get_current_user)) -> FileResponse:
+    print("file_path", file_path)
+    return FileResponse(file_path)
+
 @router.get("/{result_id}", dependencies=[Security(security)])
 async def get_result(result_id: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
     return ai_service.show(result_id)
@@ -38,7 +44,11 @@ async def update_result(result_id: int, request: result_schema.ResultUpdate, use
 async def delete_result( result_id: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> bool:
     return ai_service.destroy(result_id)
 
-# get file with file_path
-@router.get("/download_file", dependencies=[Security(security)])
-async def download_file(file_path: str, user: auth_schema.TokenData = Depends(get_current_user)) -> FileResponse:
-    return FileResponse(file_path)
+@router.post("/{result_id}/upload_report", dependencies=[Security(security)])
+async def upload_report(result_id: int, report: UploadFile = File(...), user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    # check if the result exists
+    result = ai_service.show(result_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found")
+    
+    return ai_service.upload_report(result, report)

@@ -5,6 +5,7 @@ from app.models.patient import Patient
 from app.models.enums import ResultTypeEnum
 from app.models.database import get_db
 from typing import List, Optional
+from datetime import datetime
 
 
 class ResultRepository:
@@ -57,6 +58,10 @@ class ResultRepository:
         if not result:
             return None
         
+        # update the last_view_at
+        result.last_view_at = datetime.utcnow()
+        self.db.commit()
+        self.db.refresh(result)
         return result
     
     def get_results_by_study(self,study_id:int) -> List[Result]:

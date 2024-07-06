@@ -184,8 +184,8 @@ class StudyService:
 
         return True
     
-    def get_assigned_studies(self,employee_id: int) -> List[Study]:
-        return self.study_repo.get_assigned_studies(employee_id)
+    def get_assigned_studies(self,employee_id: int, status: StatusEnum, limit: int, skip: int, sort: str) -> List[Study]:
+        return self.study_repo.get_assigned_studies(employee_id, status, limit, skip, sort)
     
     def get_new_studies_count(self) -> dict:
         count = self.study_repo.get_new_studies_count()

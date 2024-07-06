@@ -140,8 +140,21 @@ class StudyRepository:
         self.db.commit()
         return True, "Doctor unassigned successfully"
     
-    def get_assigned_studies(self,employee_id: int):
-        studies = self.db.query(Study).filter(Study.doctor_id == employee_id, Study.status.in_([StatusEnum.completed,StatusEnum.in_progress])).all()
+    def get_assigned_studies(self,employee_id: int, status: StatusEnum, limit: int, skip: int, sort: str) -> List[Study]:
+
+        query = self.db.query(Study).filter(Study.doctor_id == employee_id, Study.is_deleted == False)
+        if status:
+            query = query.filter(Study.status == status)
+
+        if sort:
+            sort_key = sort.lstrip("-")
+            if sort.startswith("-"):
+                query = query.order_by(getattr(Study,sort_key).desc())
+            else:
+                query = query.order_by(getattr(Study,sort_key).asc())
+
+        studies = query.limit(limit).offset(skip).all()
+        # studies = self.db.query(Study).filter(Study.doctor_id == employee_id, Study.status.in_([StatusEnum.completed,StatusEnum.in_progress])).all()
         return studies
 
     def get_new_studies_count(self):
@@ -149,7 +162,7 @@ class StudyRepository:
     
     def get_incomplete_studies_count(self):
         # get new and in progress studies
-        return self.db.query(Study).filter(Study.status.in_([StatusEnum.new,StatusEnum.in_progress])).count()
+        return self.db.query(Study).filter(Study.status == StatusEnum.in_progress).count()
         
 
     def get_pending_studies_count(self,doctor_id:int):
