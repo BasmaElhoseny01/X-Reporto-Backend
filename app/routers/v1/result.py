@@ -53,7 +53,16 @@ async def upload_report(result_id: int, report: UploadFile = File(...), user: au
     
     return ai_service.upload_report(result, report)
 
-@router.post("/{result_id}/get_heatmap/{label}", dependencies=[Security(security)])
+@router.post("/{result_id}/upload_boxes", dependencies=[Security(security)])
+async def upload_boxes(result_id: int, boxes: UploadFile = File(...), user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    # check if the result exists
+    result = ai_service.show(result_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found")
+    
+    return ai_service.upload_boxes(result, boxes)
+
+@router.get("/{result_id}/get_heatmap/{label}", dependencies=[Security(security)])
 async def get_heatmap(result_id: int, label: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> StreamingResponse:
     if label > 7 or label < 0:
         raise HTTPException(status_code=400, detail="Invalid label")

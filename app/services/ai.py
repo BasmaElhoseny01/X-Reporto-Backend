@@ -277,6 +277,15 @@ class AIService:
 
         return blended_image
 
-    
+    def upload_boxes(self,result: Result, boxes: UploadFile) -> Result:
+        # save the boxes
+        region_path = f"static/regions/{result.id}_region.txt"
+        with open(region_path, "wb") as f:
+            f.write(boxes.file.read())
+        
+        result.region_path = region_path
+        result.last_edited_at = datetime.utcnow()
+        result.last_view_at = datetime.utcnow()
+        return self.result_repo.update(result)
         
         
