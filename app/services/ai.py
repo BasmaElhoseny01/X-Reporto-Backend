@@ -51,6 +51,8 @@ class AIService:
     def show(self,id:int) ->  Optional[Result]:
         return self.result_repo.show(id)
     
+    def get_results(self,study_id: int) -> List[Result]:
+        return self.result_repo.get_results_by_study(study_id)
     def get_result_by_study_type(self,study_id: int, type: ResultTypeEnum) -> Optional[Result]:
 
         result = self.result_repo.get_result_by_study_type(study_id,type)
@@ -287,5 +289,3 @@ class AIService:
         result.last_edited_at = datetime.utcnow()
         result.last_view_at = datetime.utcnow()
         return self.result_repo.update(result)
-        
-        

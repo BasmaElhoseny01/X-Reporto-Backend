@@ -12,4 +12,5 @@ python-dotenv
 alembic
 elasticsearch
 albumentations
+pydantic-settings
 # opencv-python-headless

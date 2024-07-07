@@ -142,6 +142,9 @@ async def get_completed_studies_count(user: auth_schema.TokenData = Depends(get_
 # async def delete_result(study_id: int, result_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
 #     return study_Service.delete_result(study_id, result_id)
 
+@router.get("/{study_id}/results", dependencies=[Security(security)])
+async def get_results(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> List[result_schema.ResultShow]:
+    return ai_service.get_results(study_id)
 
 @router.post("/{study_id}/run_llm")
 async def run_llm(study_id: int,

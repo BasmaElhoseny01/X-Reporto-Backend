@@ -73,3 +73,5 @@ class ResultRepository:
         result = self.db.query(Result).filter(Result.study_id == study_id, Result.type == type).first()
         return result
     
+
+    

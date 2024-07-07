@@ -6,7 +6,6 @@ from app.models.enums import GenderEnum, RoleEnum, OccupationEnum
 class EmployeeBase(BaseModel):
     employee_name: Optional[str] = None
     role:  Optional[str] = RoleEnum.user
-    type: Optional[str] = OccupationEnum.employee
     age: Optional[int] = None
     birth_date: Optional[str] = None
     created_at: Optional[datetime] = datetime.utcnow()
@@ -18,6 +17,7 @@ class EmployeeBase(BaseModel):
 class EmployeeCreate(EmployeeBase):
     password: str
     username: str
+    type: Optional[str] = OccupationEnum.employee
 
 
 class EmployeeUpdate(EmployeeBase):
@@ -26,6 +26,7 @@ class EmployeeUpdate(EmployeeBase):
 class Employee(EmployeeBase):
     id: int
     username: str
+    type: Optional[str] = OccupationEnum.employee
     class Config:
         # allow population of ORM model
         orm_mode = True
@@ -34,6 +35,7 @@ class Employee(EmployeeBase):
 class EmployeeShow(EmployeeBase):
     id: int
     username: str
+    type: Optional[str] = OccupationEnum.employee
     class Config:
         # allow population of ORM model
         orm_mode = True
