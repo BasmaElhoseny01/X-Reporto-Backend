@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from app.dependencies import get_study_service, get_ai_service
 from app.middleware.authentication import get_current_user, security
 from fastapi.responses import FileResponse, StreamingResponse
-
+import io
 # Create a new APIRouter instance
 router = APIRouter(
     tags=["Results"],
@@ -54,7 +54,12 @@ async def upload_report(result_id: int, report: UploadFile = File(...), user: au
     return ai_service.upload_report(result, report)
 
 @router.post("/{result_id}/get_heatmap/{label}", dependencies=[Security(security)])
-async def get_heatmap(result_id: int, label: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> FileResponse:
-    heatmap = ai_service.get_heatmap(result_id, label) # 224,224,3
-    return heatmap
+async def get_heatmap(result_id: int, label: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> StreamingResponse:
+    if label > 7 or label < 0:
+        raise HTTPException(status_code=400, detail="Invalid label")
+    
+    heatmap = ai_service.get_heatmap(result_id, label) # (224,224,3)
+
+    # return heatmap where heatmap is a numpy array
+    return StreamingResponse(io.BytesIO(heatmap.tobytes()), media_type="image/png")
     

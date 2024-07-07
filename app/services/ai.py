@@ -13,6 +13,7 @@ from app.core.config import configs
 import os
 import requests
 import cv2
+import albumentations as A
 import numpy as np
 
 
@@ -206,7 +207,52 @@ class AIService:
         result.last_view_at = datetime.utcnow()
         return self.result_repo.update(result)
     
-    def get_heatmap(self,result_id: int, label: int) -> str:
+    def project_heatmap(self,image,heat_map):
+        '''
+        Overlays a heatmap [] onto an image.
+
+        Parameters:
+        - image: numpy.ndarray
+            Original BGR image of shape (2544, 3056, 3) with pixel values in the range [0, 255].
+        - heatmap: numpy.ndarray
+            Heatmap of shape (7, 7) with normalized values in the range [0, 1].
+
+        Returns:
+        - image_resized: numpy.ndarray
+            The original image resized to (224, 224, 3) in BGR format.
+        - heatmap_resized: numpy.ndarray
+            The heatmap resized to (224, 224, 3) in BGR format.
+        - blended_image: numpy.ndarray
+            The blended image of size (224, 224, 3) in BGR format, which is a weighted sum of the resized image and the heatmap.
+        '''
+        resize_and_pad_transform = A.Compose([
+            A.LongestMaxSize(max_size=224, interpolation=cv2.INTER_AREA),
+            A.PadIfNeeded(min_height=224, min_width=224, border_mode=cv2.BORDER_CONSTANT, value=0)
+        ])
+
+        # Resize Image to be HEAT_MAP_IMAGE_SIZExHEAT_MAP_IMAGE_SIZEx3 (224x224x3)
+        # image_resized = cv2.resize(image, (HEAT_MAP_IMAGE_SIZE, HEAT_MAP_IMAGE_SIZE)) #(224, 224, 3)
+        image_resized = resize_and_pad_transform(image=image)["image"]
+
+        # Resize Heat Map to be same size as the image (224x224x3)
+        heatmap_resized = cv2.resize(heat_map, (224, 224))
+
+        # Define Color Map [generates a heatmap image from the input cam data, where different intensity values in cam are mapped to corresponding colors in the "jet" colormap.]
+        heatmap_resized=cv2.applyColorMap(np.uint8(255*heatmap_resized), cv2.COLORMAP_JET) 
+
+
+        print(heatmap_resized.shape)
+        print(image_resized.shape)
+        # Weighted Sum 1*img + 0.25*heatmap (224x224x3)
+        blended_image = cv2.addWeighted(image_resized,1,heatmap_resized,0.35,0)
+
+        # cv2.imwrite('./img.png',image_resized)
+        # cv2.imwrite('./heat.png',heatmap_resized)
+        # cv2.imwrite('./blend.png',blended_image)
+
+        return image_resized,heatmap_resized,blended_image
+
+    def get_heatmap(self,result_id: int, label: int) -> np.ndarray:
         # get the result
         result = self.result_repo.show(result_id)
         if not result:
@@ -217,6 +263,20 @@ class AIService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Heatmap not found")
         
         # load the heatmap
-        heatmap = np.load(result.heatmap_path)
+        heatmap = np.load(result.heatmap_path+".npy")
+
+        # load image
+        xray = cv2.imread(result.xray_path, cv2.IMREAD_COLOR)
+
+        # project the heatmap on the xray
+        _, _, blended_image = self.project_heatmap(xray, heatmap[label])
+
+        #save the blended image
+        blended_path = f"static/heatmaps/{result_id}_blended_{label}.png"
+        cv2.imwrite(blended_path, blended_image)
+
+        return blended_image
+
+    
         
         

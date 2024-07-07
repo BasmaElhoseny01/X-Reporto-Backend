@@ -150,8 +150,8 @@ async def run_llm(study_id: int,
                   ai_service: AIService = Depends(get_ai_service),
                   background: BackgroundTasks = BackgroundTasks()) -> result_schema.ResultShow:
     
-    if user.type != "doctor":
-        raise HTTPException(status_code=403, detail="You are not allowed to run LLM model")
+    # if user.type != "doctor":
+    #     raise HTTPException(status_code=403, detail="You are not allowed to run LLM model")
     
     # check if the study exists
     study = study_Service.study_repo.show(study_id)
@@ -159,8 +159,8 @@ async def run_llm(study_id: int,
     if not study:
         raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")
     
-    if study.doctor_id != user.id:
-        raise HTTPException(status_code=403, detail="You are not allowed to run LLM model for this study")
+    # if study.doctor_id != user.id:
+    #     raise HTTPException(status_code=403, detail="You are not allowed to run LLM model for this study")
     
     if study.xray_path is None:
         raise HTTPException(status_code=400, detail="X-ray image is required to run LLM model")
@@ -170,17 +170,17 @@ async def run_llm(study_id: int,
     result = ai_service.get_result_by_study_type(study_id, ResultTypeEnum.llm)
     # result = None
 
-    if result:
-        raise HTTPException(status_code=400, detail="LLM model has already been run for this study")
-    
-    result = {
-            "study_id": study_id,
-            "xray_path": study.xray_path,
-            "type": ResultTypeEnum.llm,
-            "result_name": "GPT-2 generated report"
-        }
+    if not result:
+        
+        # raise HTTPException(status_code=400, detail="LLM model has already been run for this study")
+        result = {
+                "study_id": study_id,
+                "xray_path": study.xray_path,
+                "type": ResultTypeEnum.llm,
+                "result_name": "GPT-2 generated report"
+            }
 
-    result = ai_service.create(result)
+        result = ai_service.create(result)
 
     # Add the task to the background tasks queue
     background.add_task(ai_service.run_llm, result.id, study.xray_path)
@@ -196,8 +196,8 @@ async def run_heatmap(study_id: int,
                       ai_service: AIService = Depends(get_ai_service),
                       background: BackgroundTasks = BackgroundTasks()) -> result_schema.ResultShow:
     
-    if user.type != "doctor":
-        raise HTTPException(status_code=403, detail="You are not allowed to run heatmap model")
+    # if user.type != "doctor":
+    #     raise HTTPException(status_code=403, detail="You are not allowed to run heatmap model")
     
     # check if the study exists
     study = study_Service.study_repo.show(study_id)
@@ -205,28 +205,28 @@ async def run_heatmap(study_id: int,
     if not study:
         raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")
     
-    if study.doctor_id != user.id:
-        raise HTTPException(status_code=403, detail="You are not allowed to run heatmap model for this study")
+    # if study.doctor_id != user.id:
+    #     raise HTTPException(status_code=403, detail="You are not allowed to run heatmap model for this study")
     
     if study.xray_path is None:
         raise HTTPException(status_code=400, detail="X-ray image is required to run heatmap model")
     
     print("running heatmap model")
     # get results for the study and check if the heatmap model has already been run
-    # result = ai_service.get_result_by_study_type(study_id, ResultTypeEnum.template)
-    result = None
+    result = ai_service.get_result_by_study_type(study_id, ResultTypeEnum.template)
+    # result = None
 
-    if result:
-        raise HTTPException(status_code=400, detail="Heatmap model has already been run for this study")
+    if not result:
+        # raise HTTPException(status_code=400, detail="Heatmap model has already been run for this study")
     
-    result = {
-            "study_id": study_id,
-            "xray_path": study.xray_path,
-            "type": ResultTypeEnum.template,
-            "result_name": " Template based report with heatmaps"
-        }
-    
-    result = ai_service.create(result)
+        result = {
+                "study_id": study_id,
+                "xray_path": study.xray_path,
+                "type": ResultTypeEnum.template,
+                "result_name": " Template based report with heatmaps"
+            }
+        
+        result = ai_service.create(result)
 
     # Add the task to the background tasks queue
     background.add_task(ai_service.run_heatmap, result.id, study.xray_path)
