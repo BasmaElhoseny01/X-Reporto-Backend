@@ -35,7 +35,7 @@ class Employee(EmployeeBase):
 class EmployeeShow(EmployeeBase):
     id: int
     username: str
-    type: Optional[str] = OccupationEnum.employee
+    type: Optional[str] = None
     class Config:
         # allow population of ORM model
         orm_mode = True
