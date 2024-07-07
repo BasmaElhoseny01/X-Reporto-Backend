@@ -24,6 +24,9 @@ async def read_patients(limit: int = 10, skip: int = 0, sort: str = None,user: a
 # Define a route for creating a new patient
 @router.post("/", dependencies=[Security(security)])
 async def create_patient(request: patient_schema.PatientCreate, user: auth_schema.TokenData  = Depends(get_current_user), patient_service: PatientService = Depends(get_patient_service)) -> patient_schema.Patient:
+    if user.type != "employee":
+        raise HTTPException(status_code=403, detail="You are not allowed to create a patient")
+    
     request.employee_id = user.id
     patient = patient_service.create(request.dict())
     return patient
@@ -39,12 +42,17 @@ async def read_patient(id: int,user: auth_schema.TokenData  = Depends(get_curren
 # Define a route for updating a patient by ID
 @router.put("/{id}", dependencies=[Security(security)] )
 async def update_patient(id: int, request: patient_schema.PatientCreate,user: auth_schema.TokenData  = Depends(get_current_user), patient_service: PatientService = Depends(get_patient_service)) -> patient_schema.Patient:
+    if user.type != "employee":
+        raise HTTPException(status_code=403, detail="You are not allowed to update a patient")
+
     patient = patient_service.update(id, request.dict())
     return patient
 
 # Define a route for deleting a patient by ID
 @router.delete("/{id}", dependencies=[Security(security)])
 async def delete_patient(id: int,user: auth_schema.TokenData  = Depends(get_current_user), patient_service: PatientService = Depends(get_patient_service)) -> bool:
+    if user.type != "employee":
+        raise HTTPException(status_code=403, detail="You are not allowed to delete a patient")
     result = patient_service.destroy(id)
     if not result:
         raise HTTPException(status_code=404, detail=f"Patient with id {id} not found")
