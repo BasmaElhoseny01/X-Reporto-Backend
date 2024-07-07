@@ -148,7 +148,7 @@ if __name__ == "__main__":
                 study_name="archived study",
                 notes="Notes 1",
                 severity=1,
-                xray_path="xray.png",
+                # xray_path="xray.png",
                 xray_type="type1",
                 status = StatusEnum.archived,
                 employee_id=employee.id
@@ -159,7 +159,7 @@ if __name__ == "__main__":
                 study_name="Study 2",
                 notes="Notes 2",
                 severity=2,
-                xray_path="xray.png",
+                # xray_path="xray.png",
                 xray_type="type2",
                 status = StatusEnum.new
             ),
@@ -169,7 +169,7 @@ if __name__ == "__main__":
                 study_name="Study 3",
                 notes="Notes 3",
                 severity=3,
-                xray_path="xray.png",
+                # xray_path="xray.png",
                 xray_type="type3",
                 status = StatusEnum.new
             ),
@@ -180,7 +180,7 @@ if __name__ == "__main__":
                 study_name="completed study",
                 notes="Notes 1",
                 severity=1,
-                xray_path="xray.png",
+                # xray_path="xray.png",
                 xray_type="type1",
                 status = StatusEnum.completed
             ),
@@ -191,7 +191,7 @@ if __name__ == "__main__":
                 study_name="in progress study",
                 notes="Notes 1",
                 severity=1,
-                xray_path="xray.png",
+                # xray_path="xray.png",
                 xray_type="type1",
                 status = StatusEnum.in_progress
             ),
@@ -201,7 +201,7 @@ if __name__ == "__main__":
                 study_name="new study",
                 notes="Notes 1",
                 severity=1,
-                xray_path="xray.png",
+                # xray_path="xray.png",
                 xray_type="type1",
                 status = StatusEnum.new
             )
