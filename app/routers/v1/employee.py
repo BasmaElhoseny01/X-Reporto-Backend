@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Security
 from app.models import database
 from app.schemas import employee as employee_schema, authentication as auth_schema, error as error_schema
 from app.schemas import study as study_schema
-from app.models.enums import OccupationEnum
+from app.models.enums import OccupationEnum, StatusEnum
 from app.services.employee import EmployeeService
 from app.services.study import StudyService
 from typing import List, Union
@@ -88,10 +88,10 @@ async def delete_employee(employee_id: int,user: auth_schema.TokenData  = Depend
             , responses={404: {"model": error_schema.Error},
                          200: {"description": "Studies retrieved successfully"},
                          401: {"model": error_schema.Error}})
-async def read_employee_studies(employee_id: int,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service), study_service: StudyService = Depends(get_study_service)) -> List[study_schema.StudyShow]:
+async def read_employee_studies(employee_id: int,status: StatusEnum = None, limit: int = 10, skip: int = 0, sort: str = None, user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service), study_service: StudyService = Depends(get_study_service)) -> List[study_schema.StudyShow]:
     employee = employee_Service.show(employee_id)
     if not employee:
         raise HTTPException(status_code=404, detail=f"Doctor with id {employee_id} not found")
     if employee.type != "doctor":
         raise HTTPException(status_code=400, detail="Employee is not a doctor")
-    return study_service.get_assigned_studies(employee.id)
+    return study_service.get_assigned_studies(employee.id, status, limit, skip, sort)
