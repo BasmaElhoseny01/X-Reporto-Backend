@@ -68,7 +68,7 @@ class AIService:
             files = {'image': open(xray_path, 'rb')}
     
             try:
-                response = requests.post(url, files=files, timeout=60)
+                response = requests.post(url, files=files, timeout=120)
     
                 print(response.status_code)
     
@@ -120,7 +120,7 @@ class AIService:
         files = {'image': open(xray_path, 'rb')}
 
         try:
-            response = requests.post(url, files=files, timeout=60)
+            response = requests.post(url, files=files, timeout=120)
 
             print(response.status_code)
 
@@ -156,7 +156,7 @@ class AIService:
 
         files = {'image': open(xray_path, 'rb')}
         try:
-            response = requests.post(url, files=files, timeout=60)
+            response = requests.post(url, files=files, timeout=120)
             print(response.status_code)
 
             # if successful, save the report and heatmap
@@ -166,6 +166,7 @@ class AIService:
                 bounding_boxes = response["bounding_boxes"]
                 report_text = response["report_text"]
                 class_labels = response["detected_classes"]
+                boxes_sentences = response["lm_sentences_decoded"]
 
 
                 # save the report
@@ -181,11 +182,18 @@ class AIService:
                     for i, box in enumerate(bounding_boxes):
                         f.write(f"{class_labels[i]} {box[0]} {box[1]} {box[2] - box[0]} {box[3] - box[1]}\n")
                 
+                # save the boxes sentences
+                boxes_sentences_path = f"static/boxes_sentences/{result_id}_boxes_sentences.txt"
+                os.makedirs(os.path.dirname(boxes_sentences_path), exist_ok=True)
+                with open(boxes_sentences_path, "w") as f:
+                    for i, sentence in enumerate(boxes_sentences):
+                        f.write(f"{sentence}\n")
                 # fetch the result
                 result = self.result_repo.show(result_id)
                 # save path to report and region
                 result.report_path = report_path
                 result.region_path = region_path
+                result.region_sentence_path = boxes_sentences_path
                 result.last_edited_at = datetime.utcnow()
                 result.last_view_at = datetime.utcnow()
 

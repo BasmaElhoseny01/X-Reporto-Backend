@@ -18,6 +18,7 @@ class Result(Base):
     report_path = Column(String)
     heatmap_path = Column(String)
     region_path = Column(String)
+    region_sentence_path = Column(String)
     last_view_at = Column(DateTime, default = datetime.datetime.utcnow)
     last_edited_at = Column(DateTime, default = datetime.datetime.utcnow)
     study_id = Column(Integer, ForeignKey("studies.id"), nullable=False)

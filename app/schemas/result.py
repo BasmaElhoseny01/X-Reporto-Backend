@@ -25,6 +25,7 @@ class Result(ResultBase):
     region_path: Optional[str]  = None
     heatmap_path: Optional[str] = None
     report_path: Optional[str] = None
+    region_sentence_path: Optional[str] = None
     class Config:
         # allow population of ORM model
         orm_mode = True
