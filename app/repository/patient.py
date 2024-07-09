@@ -39,6 +39,8 @@ class PatientRepository:
         patient = self.db.query(Patient).filter(Patient.id == id).first()
         if not patient:
             return None
+        # populate the studies
+        
         return patient
 
     def show_with_studies(self,id:int,status: StatusEnum, limit: int, skip: int, sort: str) ->  Optional[Patient]:

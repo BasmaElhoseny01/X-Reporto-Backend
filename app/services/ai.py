@@ -297,3 +297,14 @@ class AIService:
         result.last_edited_at = datetime.utcnow()
         result.last_view_at = datetime.utcnow()
         return self.result_repo.update(result)
+    
+    def upload_boxes_sentences(self,result: Result, sentences: UploadFile) -> Result:
+        # save the boxes
+        boxes_sentences_path = f"static/boxes_sentences/{result.id}_boxes_sentences.txt"
+        with open(boxes_sentences_path, "wb") as f:
+            f.write(sentences.file.read())
+        
+        result.region_sentence_path = boxes_sentences_path
+        result.last_edited_at = datetime.utcnow()
+        result.last_view_at = datetime.utcnow()
+        return self.result_repo.update(result)
