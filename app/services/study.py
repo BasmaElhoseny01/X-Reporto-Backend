@@ -7,6 +7,7 @@ from app.models.activity import Activity
 from app.models.enums import StatusEnum, ActivityEnum
 from typing import List, Optional
 from datetime import datetime
+import albumentations as A
 import cv2
 import os
 
@@ -119,8 +120,15 @@ class StudyService:
         # read image
         img = cv2.imread(img_path)
 
-        # resize image to 512*512
-        img = cv2.resize(img, (512, 512))
+        transform =  A.Compose(
+                        [
+                            A.LongestMaxSize(max_size=512, interpolation=cv2.INTER_AREA),
+                            A.PadIfNeeded(min_height=512, min_width=512,border_mode= cv2.BORDER_CONSTANT,value=0),
+
+                        ])
+        
+        # apply transformation
+        img = transform(image=img)["image"]
 
         # save resized image in new path
         new_path = img_path.replace("xray.jpg", "resized_xray.jpg")
