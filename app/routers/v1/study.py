@@ -9,6 +9,7 @@ from typing import List
 from sqlalchemy.orm import Session
 from app.dependencies import get_study_service, get_ai_service, get_result_repository
 from app.middleware.authentication import get_current_user, security
+from fastapi.responses import FileResponse, StreamingResponse
 
 # Create a new APIRouter instance
 router = APIRouter(
@@ -63,6 +64,17 @@ async def upload_image(study_id: int, file: UploadFile = File(...), user: auth_s
     if not study:
         raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")
     return study_Service.upload_image(study, file)
+
+@router.get("/{study_id}/download_resized_image", dependencies=[Security(security)])
+async def download_image(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> FileResponse:
+    study = study_Service.show(study_id,False)
+    if not study:
+        raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")
+    if study.xray_path is None:
+        raise HTTPException(status_code=400, detail="X-ray image is required to download resized image")
+    resized_path = study_Service.resize_image(study.xray_path)
+    return FileResponse(resized_path)
+
 
 @router.post("/{study_id}/archive", dependencies=[Security(security)])
 async def archive_study(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
@@ -120,27 +132,6 @@ async def get_completed_studies_count(user: auth_schema.TokenData = Depends(get_
         raise HTTPException(status_code=403, detail="You are not allowed to view completed studies")
     return study_Service.get_completed_studies_count(user.id)
 
-
-# Results endpoints
-# @router.get("/{study_id}/results", dependencies=[Security(security)])
-# async def get_results(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> List[result_schema.ResultShow]:
-#     return study_Service.get_results(study_id)
-
-# @router.post("/{study_id}/results", dependencies=[Security(security)])
-# async def create_result(study_id: int, request: result_schema.ResultCreate, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> result_schema.ResultShow:
-#     return study_Service.create_result(study_id, request.dict())
-
-# @router.get("/{study_id}/results/{result_id}", dependencies=[Security(security)])
-# async def get_result(study_id: int, result_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> result_schema.ResultShow:
-#     return study_Service.get_result(study_id, result_id)
-
-# @router.put("/{study_id}/results/{result_id}", dependencies=[Security(security)])
-# async def update_result(study_id: int, result_id: int, request: result_schema.ResultUpdate, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> result_schema.ResultShow:
-#     return study_Service.update_result(study_id, result_id, request.dict())
-
-# @router.delete("/{study_id}/results/{result_id}", dependencies=[Security(security)])
-# async def delete_result(study_id: int, result_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
-#     return study_Service.delete_result(study_id, result_id)
 
 @router.get("/{study_id}/results", dependencies=[Security(security)])
 async def get_results(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> List[result_schema.ResultShow]:

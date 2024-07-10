@@ -7,6 +7,7 @@ from app.models.activity import Activity
 from app.models.enums import StatusEnum, ActivityEnum
 from typing import List, Optional
 from datetime import datetime
+import cv2
 import os
 
 
@@ -113,6 +114,20 @@ class StudyService:
         study.last_view_at =  datetime.utcnow()
         self.study_repo.update(study)
         return study
+    
+    def resize_image(self, img_path: str):
+        # read image
+        img = cv2.imread(img_path)
+
+        # resize image to 512*512
+        img = cv2.resize(img, (512, 512))
+
+        # save resized image in new path
+        new_path = img_path.replace("xray.jpg", "resized_xray.jpg")
+
+        cv2.imwrite(new_path, img)
+
+        return new_path
 
     def archive(self,id:int, doctor_id:int) -> bool:
         success, message = self.study_repo.archive(id, doctor_id)
