@@ -285,7 +285,7 @@ class AIService:
         blended_path = f"static/heatmaps/{result_id}_blended_{label}.png"
         cv2.imwrite(blended_path, blended_image)
 
-        return blended_image
+        return blended_path
 
     def upload_boxes(self,result: Result, boxes: UploadFile) -> Result:
         # save the boxes

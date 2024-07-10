@@ -15,8 +15,7 @@ class StudyBase(BaseModel):
     xray_type: Optional[str] = None
     severity: Optional[int] = 0
     patient_id: Optional[int] = None
-    doctor_id: Optional[int] = None
-    employee_id: Optional[int] = None
+    employee_id: int
 
 
 class StudyCreate(StudyBase):
@@ -28,7 +27,7 @@ class StudyUpdate(StudyBase):
 
 class Study(StudyBase):
     id: int
-    
+    doctor_id: Optional[int] = None
     class Config:
         # allow population of ORM model
         orm_mode = True
