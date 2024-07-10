@@ -41,7 +41,8 @@ class AIService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Result not found")
         
         for key, value in result__data.items():
-            setattr(result, key, value)
+            if value:
+                setattr(result, key, value)
 
         result.last_edited_at = datetime.utcnow()
         result.last_view_at = datetime.utcnow()
