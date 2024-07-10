@@ -14,6 +14,7 @@ class ResultBase(BaseModel):
     study_id: int
 
 class ResultCreate(ResultBase):
+    xray_path: Optional[str] = None
     pass
 
 class ResultUpdate(ResultBase):

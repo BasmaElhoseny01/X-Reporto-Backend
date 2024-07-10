@@ -118,7 +118,10 @@ class StudyRepository:
         
         # check if the doctor is already assigned
         if study.first().doctor_id:
-            return False, "Doctor already assigned to study"
+            if study.first().doctor_id == doctor_id:
+                return False, "You are already assigned to study"
+            else:
+                return False, "Doctor already assigned to study"
         
         study.update({"doctor_id":doctor_id, "status":StatusEnum.in_progress})
         self.db.commit()
@@ -129,7 +132,6 @@ class StudyRepository:
         if not study.first():
             return False, "Study not found"
         
-
         if study.first().doctor_id != doctor_id:
             return False, "You are not allowed to unassign this study"
         
