@@ -18,6 +18,7 @@ class ResultCreate(ResultBase):
     pass
 
 class ResultUpdate(ResultBase):
+    xray_path: Optional[str] = None
     pass
 
 class Result(ResultBase):
