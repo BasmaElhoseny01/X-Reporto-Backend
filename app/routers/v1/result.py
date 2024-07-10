@@ -34,7 +34,10 @@ async def download_file(file_path: str, user: auth_schema.TokenData = Depends(ge
 
 @router.get("/{result_id}", dependencies=[Security(security)])
 async def get_result(result_id: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
-    return ai_service.show(result_id)
+    result = ai_service.show(result_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found")
+    return result
 
 @router.put("/{result_id}", dependencies=[Security(security)])
 async def update_result(result_id: int, request: result_schema.ResultUpdate, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
