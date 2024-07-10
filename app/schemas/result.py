@@ -19,6 +19,7 @@ class ResultCreate(ResultBase):
 
 class ResultUpdate(ResultBase):
     xray_path: Optional[str] = None
+    study_id: Optional[int] = None
     pass
 
 class Result(ResultBase):
