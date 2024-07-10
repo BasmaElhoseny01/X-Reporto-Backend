@@ -16,6 +16,7 @@ class Study(Base):
     updated_at = Column(DateTime, default = datetime.datetime.utcnow)
     severity = Column(Integer)
     xray_path = Column(String)
+    resized_xray_path = Column(String)
     xray_type = Column(String) # This should be an Enum
     is_archived = Column(Boolean, default=False)
     is_deleted = Column(Boolean, default=False)

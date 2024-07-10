@@ -12,6 +12,7 @@ class StudyBase(BaseModel):
     updated_at: Optional[datetime] = datetime.utcnow()
     created_at: Optional[datetime] = datetime.utcnow()
     xray_path: Optional[str] = None
+    resized_xray_path: Optional[str] = None
     xray_type: Optional[str] = None
     severity: Optional[int] = 0
     patient_id: Optional[int] = None

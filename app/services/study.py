@@ -116,9 +116,9 @@ class StudyService:
         self.study_repo.update(study)
         return study
     
-    def resize_image(self, img_path: str):
+    def resize_image(self, study: Study):
         # read image
-        img = cv2.imread(img_path)
+        img = cv2.imread(study.xray_path)
 
         transform =  A.Compose(
                         [
@@ -131,9 +131,13 @@ class StudyService:
         img = transform(image=img)["image"]
 
         # save resized image in new path
-        new_path = img_path.replace("xray.jpg", "resized_xray.jpg")
+        new_path = study.xray_path.replace("xray.jpg", "resized_xray.jpg")
 
         cv2.imwrite(new_path, img)
+
+        study.resized_xray_path = new_path
+
+        self.study_repo.update(study)
 
         return new_path
 

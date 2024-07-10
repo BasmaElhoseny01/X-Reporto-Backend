@@ -72,9 +72,10 @@ async def download_image(study_id: int, user: auth_schema.TokenData = Depends(ge
         raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")
     if study.xray_path is None:
         raise HTTPException(status_code=400, detail="X-ray image is required to download resized image")
-    resized_path = study_Service.resize_image(study.xray_path)
-    return FileResponse(resized_path)
+    resized_path = study_Service.resize_image(study)
 
+    # add path of resized image to response headers
+    return FileResponse(resized_path, headers={"resized_xray_path": resized_path})
 
 @router.post("/{study_id}/archive", dependencies=[Security(security)])
 async def archive_study(study_id: int, user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> bool:
