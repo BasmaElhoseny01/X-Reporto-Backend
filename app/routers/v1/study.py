@@ -47,7 +47,7 @@ async def read_study(study_id: int,user: auth_schema.TokenData = Depends(get_cur
 # Define a route for updating an employee
 @router.put("/{study_id}", dependencies=[Security(security)])
 async def update_study(study_id: int, request: study_schema.StudyUpdate, user: auth_schema.TokenData = Depends(get_current_user),study_Service: StudyService = Depends(get_study_service)) -> study_schema.StudyShow:
-    study = study_Service.update(study_id, request.dict())
+    study = study_Service.update(study_id, request.dict(), user.id)
     return study
 
 # Define a route for deleting an employee
@@ -145,8 +145,8 @@ async def run_llm(study_id: int,
                   ai_service: AIService = Depends(get_ai_service),
                   background: BackgroundTasks = BackgroundTasks()) -> result_schema.ResultShow:
     
-    # if user.type != "doctor":
-    #     raise HTTPException(status_code=403, detail="You are not allowed to run LLM model")
+    if user.type != "doctor":
+        raise HTTPException(status_code=403, detail="You are not allowed to run LLM model")
     
     # check if the study exists
     study = study_Service.study_repo.show(study_id)
@@ -154,8 +154,8 @@ async def run_llm(study_id: int,
     if not study:
         raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")
     
-    # if study.doctor_id != user.id:
-    #     raise HTTPException(status_code=403, detail="You are not allowed to run LLM model for this study")
+    if study.doctor_id != user.id:
+        raise HTTPException(status_code=403, detail="You are not allowed to run LLM model for this study")
     
     if study.xray_path is None:
         raise HTTPException(status_code=400, detail="X-ray image is required to run LLM model")
@@ -191,8 +191,8 @@ async def run_heatmap(study_id: int,
                       ai_service: AIService = Depends(get_ai_service),
                       background: BackgroundTasks = BackgroundTasks()) -> result_schema.ResultShow:
     
-    # if user.type != "doctor":
-    #     raise HTTPException(status_code=403, detail="You are not allowed to run heatmap model")
+    if user.type != "doctor":
+        raise HTTPException(status_code=403, detail="You are not allowed to run heatmap model")
     
     # check if the study exists
     study = study_Service.study_repo.show(study_id)
@@ -200,8 +200,8 @@ async def run_heatmap(study_id: int,
     if not study:
         raise HTTPException(status_code=404, detail=f"Study with id {study_id} not found")
     
-    # if study.doctor_id != user.id:
-    #     raise HTTPException(status_code=403, detail="You are not allowed to run heatmap model for this study")
+    if study.doctor_id != user.id:
+        raise HTTPException(status_code=403, detail="You are not allowed to run heatmap model for this study")
     
     if study.xray_path is None:
         raise HTTPException(status_code=400, detail="X-ray image is required to run heatmap model")

@@ -29,11 +29,14 @@ class StudyService:
     def destroy(self,id:int) -> bool:
         return self.study_repo.destroy(id)
     
-    def update(self,id:int,study_data:dict) -> Study:
+    def update(self,id:int,study_data:dict, user_id: int) -> Study:
         study = self.study_repo.show(id)
         if not study:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Study with id {id} not found")
         
+        
+        if study.doctor_id != user_id or study.employee_id != user_id:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="You are not authorized to edit this study")
         
         # update the last edited time
         study.last_edited_at = datetime.utcnow()
