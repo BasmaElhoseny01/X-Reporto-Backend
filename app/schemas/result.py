@@ -12,6 +12,7 @@ class ResultBase(BaseModel):
     last_edited_at: Optional[datetime] = datetime.utcnow()
     created_at: Optional[datetime] = datetime.utcnow()
     study_id: int
+    is_ready: Optional[bool] = False
 
 class ResultCreate(ResultBase):
     xray_path: Optional[str] = None

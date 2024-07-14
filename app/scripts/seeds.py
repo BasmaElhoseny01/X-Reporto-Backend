@@ -179,7 +179,7 @@ if __name__ == "__main__":
                 employee_id=employee.id,
                 study_name="completed study",
                 notes="Notes 1",
-                severity=1,
+                severity=2,
                 # xray_path="xray.png",
                 xray_type="type1",
                 status = StatusEnum.completed
@@ -190,7 +190,7 @@ if __name__ == "__main__":
                 employee_id=employee.id,
                 study_name="in progress study",
                 notes="Notes 1",
-                severity=1,
+                severity=1.8,
                 # xray_path="xray.png",
                 xray_type="type1",
                 status = StatusEnum.in_progress
@@ -200,7 +200,7 @@ if __name__ == "__main__":
                 employee_id=employee.id,
                 study_name="new study",
                 notes="Notes 1",
-                severity=1,
+                severity=1.5,
                 # xray_path="xray.png",
                 xray_type="type1",
                 status = StatusEnum.new

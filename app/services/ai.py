@@ -80,6 +80,7 @@ class AIService:
                 result = Result(result_name="Template", type=ResultTypeEnum.template, study_id=study.id)
                 result = self.result_repo.create(result)
                 result.xray_path = study.xray_path
+                result.is_ready = True
                 # calculate the severity
                 self.run_heatmap(result.id, result.xray_path)
             except Exception as e:
@@ -128,7 +129,7 @@ class AIService:
                     result.report_path = report_path
                     result.last_edited_at = datetime.utcnow()
                     result.last_view_at = datetime.utcnow()
-    
+                    result.is_ready = True
                     # save severity in study of the result
                     study = self.study_repo.show(result.study_id)
                     study.severity = severity
@@ -169,6 +170,7 @@ class AIService:
                 result.xray_path = denoised_path
                 result.last_edited_at = datetime.utcnow()
                 result.last_view_at = datetime.utcnow()
+                result.is_ready = True
 
                 self.result_repo.update(result)
                 print("Denoised image saved")

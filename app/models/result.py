@@ -21,6 +21,7 @@ class Result(Base):
     region_sentence_path = Column(String)
     last_view_at = Column(DateTime, default = datetime.datetime.utcnow)
     last_edited_at = Column(DateTime, default = datetime.datetime.utcnow)
+    is_ready = Column(Boolean, default=False)
     study_id = Column(Integer, ForeignKey("studies.id"), nullable=False)
 
     study = relationship("Study", back_populates="results")
