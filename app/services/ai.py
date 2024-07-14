@@ -61,6 +61,32 @@ class AIService:
             return None
         return result
     
+    def calculate_severities(self) -> None:
+        # fetch new studies
+        studies = self.study_repo.get_all(StatusEnum.new, 100, 0, None)
+        
+        # calculate severity
+        for study in studies:
+            try:
+                if study.xray_path is None:
+                    continue
+                if study.severity != 0:
+                    continue
+                # fetch template result for the study
+                template_result = self.result_repo.get_result_by_study_type(study.id, ResultTypeEnum.template)
+                if template_result:
+                    continue
+                # create a new result
+                result = Result(result_name="Template", type=ResultTypeEnum.template, study_id=study.id)
+                result = self.result_repo.create(result)
+                result.xray_path = study.xray_path
+                # calculate the severity
+                self.run_heatmap(result.id, result.xray_path)
+            except Exception as e:
+                print(e)
+                continue
+    
+
     def run_heatmap(self , result_id: int, xray_path: str) -> Result:
             
             # send the xray image to the AI model

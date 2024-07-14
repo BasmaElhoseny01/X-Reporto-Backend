@@ -15,7 +15,7 @@ class PatientStudy(BaseModel):
     xray_path: Optional[str] = None
     resized_xray_path: Optional[str] = None
     xray_type: Optional[str] = None
-    severity: Optional[int] = 0
+    severity: Optional[float] = 0
     is_archived: Optional[bool] =False
     patient_id: Optional[int] = None
     doctor_id: Optional[int] = None

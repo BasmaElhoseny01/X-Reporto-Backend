@@ -36,6 +36,12 @@ async def create_studies(request: study_schema.StudyCreate, user: auth_schema.To
 async def get_assigned_studies(user: auth_schema.TokenData = Depends(get_current_user),status: StatusEnum = None, limit: int = 10, skip: int = 0, sort: str = None, study_Service: StudyService = Depends(get_study_service)) -> List[study_schema.StudyShow]:
     return study_Service.get_assigned_studies(user.id, status, limit, skip, sort)
 
+@router.post("/run_backgroud", dependencies=[Security(security)])
+async def run_background(user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service) , background: BackgroundTasks = BackgroundTasks()) -> dict:
+    background.add_task(ai_service.calculate_severities)
+    # return a response indicating the task is running
+    return {"detail": "Task is running in the background"}
+
 # Define a route for getting a single employee
 @router.get("/{study_id}", dependencies=[Security(security)])
 async def read_study(study_id: int,user: auth_schema.TokenData = Depends(get_current_user), study_Service: StudyService = Depends(get_study_service)) -> patient_study_schema.PatientStudy:

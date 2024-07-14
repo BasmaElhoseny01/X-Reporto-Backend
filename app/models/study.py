@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Boolean, DateTime, Float
 from sqlalchemy.orm import relationship
 from app.models.database import Base
 from app.models.enums import StatusEnum
@@ -14,7 +14,7 @@ class Study(Base):
     status = Column(Enum(StatusEnum), default=StatusEnum.new)
     created_at = Column(DateTime, default = datetime.datetime.utcnow)
     updated_at = Column(DateTime, default = datetime.datetime.utcnow)
-    severity = Column(Integer)
+    severity = Column(Float)
     xray_path = Column(String)
     resized_xray_path = Column(String)
     xray_type = Column(String) # This should be an Enum
