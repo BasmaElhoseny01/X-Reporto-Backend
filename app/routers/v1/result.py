@@ -76,7 +76,7 @@ async def upload_boxes_sentences(result_id: int, sentences: UploadFile = File(..
 
 
 @router.get("/{result_id}/get_heatmap/{label}", dependencies=[Security(security)],
-            responses={200: {"content": {"image/png": {}}}},
+            # responses={200: {"content": {"image/png": {}}}},
             response_class=FileResponse)
 async def get_heatmap(result_id: int, label: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> FileResponse:
     if label > 7 or label < 0:

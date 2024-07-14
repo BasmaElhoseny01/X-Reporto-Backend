@@ -5,10 +5,11 @@ from app.schemas import study as study_schema
 from app.models.enums import OccupationEnum, StatusEnum
 from app.services.employee import EmployeeService
 from app.services.study import StudyService
+from app.services.authentication import AuthenticationService
 from typing import List, Union
 from sqlalchemy.orm import Session
 from app.middleware.authentication import get_current_user, security
-from app.dependencies import get_employee_service,get_study_service
+from app.dependencies import get_employee_service,get_study_service, get_authentication_service
 
 # Create a new APIRouter instance
 router = APIRouter(
@@ -41,9 +42,28 @@ async def read_employees(type: OccupationEnum = None ,limit: int = 10, skip: int
              responses={400: {"model": error_schema.Error},
                         201: {"description": "Employee created successfully"},
                         401: {"model": error_schema.Error}})
-async def create_employees(request: employee_schema.EmployeeCreate,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service)) -> employee_schema.Employee:
-    if user.role != "admin":
+async def create_employees(request: employee_schema.EmployeeCreate,user: auth_schema.TokenData  = Depends(get_current_user), authentication_service: AuthenticationService = Depends(get_authentication_service) ,employee_Service: EmployeeService = Depends(get_employee_service)) -> employee_schema.Employee:
+    if user.role != "admin" and user.role != "manager":
+        print(user.role)
         raise HTTPException(status_code=401, detail="You are not authorized to create an employee")
+    
+    # check if the password is weak
+    weak_password, strength = authentication_service.check_password_strength(request.password)
+
+    if weak_password:
+        raise HTTPException(status_code=400, detail= strength)
+    
+    # check if the user already exists
+    existing_employee = employee_Service.get_by_username(request.username)
+
+    if existing_employee:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    
+    # encrypt password
+    request.password = authentication_service.encrypt_password(request.password)
+    request.employee_id = user.id
+
+    # add employee
     employee = employee_Service.create(request.dict())
     return employee
 
