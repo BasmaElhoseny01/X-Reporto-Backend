@@ -15,7 +15,20 @@ router = APIRouter(
 # Define a route for the patient list
 @router.post("/signup")
 async def signup(request: authentication_schema.SignUp,authentication_service: AuthenticationService = Depends(get_authentication_service) ,employee_Service: EmployeeService = Depends(get_employee_service)) -> authentication_schema.Token:
-    
+    """
+    Register a new user and return an access token.
+
+    Args:
+        request (authentication_schema.SignUp): User signup request containing username, password, and role.
+        authentication_service (AuthenticationService): Dependency for authentication operations.
+        employee_service (EmployeeService): Dependency for employee operations.
+
+    Returns:
+        authentication_schema.Token: Access token for the registered user.
+
+    Raises:
+        HTTPException: If the password is weak or the username already exists.
+    """
     # check if the password is weak
     weak_password, strength = authentication_service.check_password_strength(request.password)
 
@@ -49,6 +62,20 @@ async def signup(request: authentication_schema.SignUp,authentication_service: A
 # Define a route for creating a new patient
 @router.post("/login")
 async def login(request: authentication_schema.Login,authentication_service: AuthenticationService = Depends(get_authentication_service), employee_Service: EmployeeService = Depends(get_employee_service)) -> authentication_schema.Token:
+    """
+    Authenticate a user and return an access token.
+
+    Args:
+        request (authentication_schema.Login): User login request containing username and password.
+        authentication_service (AuthenticationService): Dependency for authentication operations.
+        employee_service (EmployeeService): Dependency for employee operations.
+
+    Returns:
+        authentication_schema.Token: Access token for the authenticated user.
+
+    Raises:
+        HTTPException: If the username is invalid or the password is incorrect.
+    """
     # check if the user exists
     employee = employee_Service.get_by_username(request.username)
 

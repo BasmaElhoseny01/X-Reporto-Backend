@@ -20,20 +20,69 @@ router = APIRouter(
 # Results endpoints
 @router.get("/", dependencies=[Security(security)])
 async def get_results( user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service),type: ResultTypeEnum = None, limit: int = 10, skip: int = 0, sort: str = None) -> List[result_schema.ResultShow]:
+    """
+    Retrieve a list of results with optional filtering and pagination.
+
+    Args:
+        user (auth_schema.TokenData): Current authenticated user.
+        ai_service (AIService): Dependency for AI operations.
+        type (ResultTypeEnum): Optional filter for result type.
+        limit (int): Maximum number of results to return (default is 10).
+        skip (int): Number of results to skip (default is 0).
+        sort (str): Sorting criteria for results.
+
+    Returns:
+        List[result_schema.ResultShow]: A list of results.
+    """
     return ai_service.get_all(type, limit, skip, sort)
 
 @router.post("/", dependencies=[Security(security)])
 async def create_result(request: result_schema.ResultCreate, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    """
+    Create a new result.
+
+    Args:
+        request (result_schema.ResultCreate): Result creation request body.
+        user (auth_schema.TokenData): Current authenticated user.
+        ai_service (AIService): Dependency for AI operations.
+
+    Returns:
+        result_schema.ResultShow: The created result.
+    """
     return ai_service.create(request.dict())
 
 # get file with file_path
 @router.get("/download_file", dependencies=[Security(security)])
 async def download_file(file_path: str, user: auth_schema.TokenData = Depends(get_current_user)) -> FileResponse:
+    """
+    Download a file from a specified file path.
+
+    Args:
+        file_path (str): The path of the file to download.
+        user (auth_schema.TokenData): Current authenticated user.
+
+    Returns:
+        FileResponse: The requested file for download.
+    """
     print("file_path", file_path)
     return FileResponse(file_path)
 
 @router.get("/{result_id}", dependencies=[Security(security)])
 async def get_result(result_id: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    """
+    Retrieve a result by its ID.
+
+    Args:
+        result_id (int): The ID of the result to retrieve.
+        user (auth_schema.TokenData): Current authenticated user.
+        ai_service (AIService): Dependency for AI operations.
+
+    Returns:
+        result_schema.ResultShow: The retrieved result.
+
+    Raises:
+        HTTPException: If the result is not found.
+    """
     result = ai_service.show(result_id)
     if not result:
         raise HTTPException(status_code=404, detail="Result not found")
@@ -41,14 +90,52 @@ async def get_result(result_id: int, user: auth_schema.TokenData = Depends(get_c
 
 @router.put("/{result_id}", dependencies=[Security(security)])
 async def update_result(result_id: int, request: result_schema.ResultUpdate, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    """
+    Update an existing result by its ID.
+
+    Args:
+        result_id (int): The ID of the result to update.
+        request (result_schema.ResultUpdate): Result update request body.
+        user (auth_schema.TokenData): Current authenticated user.
+        ai_service (AIService): Dependency for AI operations.
+
+    Returns:
+        result_schema.ResultShow: The updated result.
+    """
     return ai_service.update(result_id,request.dict())
 
 @router.delete("/{result_id}", dependencies=[Security(security)])
 async def delete_result( result_id: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> bool:
+    """
+    Delete a result by its ID.
+
+    Args:
+        result_id (int): The ID of the result to delete.
+        user (auth_schema.TokenData): Current authenticated user.
+        ai_service (AIService): Dependency for AI operations.
+
+    Returns:
+        bool: True if the result was successfully deleted.
+    """
     return ai_service.destroy(result_id)
 
 @router.post("/{result_id}/upload_report", dependencies=[Security(security)])
 async def upload_report(result_id: int, report: UploadFile = File(...), user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    """
+    Upload a report for a specific result.
+
+    Args:
+        result_id (int): The ID of the result to which the report belongs.
+        report (UploadFile): The report file to upload.
+        user (auth_schema.TokenData): Current authenticated user.
+        ai_service (AIService): Dependency for AI operations.
+
+    Returns:
+        result_schema.ResultShow: The updated result with the report uploaded.
+
+    Raises:
+        HTTPException: If the result is not found.
+    """
     # check if the result exists
     result = ai_service.show(result_id)
     if not result:
@@ -58,6 +145,21 @@ async def upload_report(result_id: int, report: UploadFile = File(...), user: au
 
 @router.post("/{result_id}/upload_boxes", dependencies=[Security(security)])
 async def upload_boxes(result_id: int, boxes: UploadFile = File(...), user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    """
+    Upload bounding boxes for a specific result.
+
+    Args:
+        result_id (int): The ID of the result to which the boxes belong.
+        boxes (UploadFile): The bounding boxes file to upload.
+        user (auth_schema.TokenData): Current authenticated user.
+        ai_service (AIService): Dependency for AI operations.
+
+    Returns:
+        result_schema.ResultShow: The updated result with the boxes uploaded.
+
+    Raises:
+        HTTPException: If the result is not found.
+    """
     # check if the result exists
     result = ai_service.show(result_id)
     if not result:
@@ -67,6 +169,21 @@ async def upload_boxes(result_id: int, boxes: UploadFile = File(...), user: auth
 
 @router.post("/{result_id}/upload_boxes_sentences", dependencies=[Security(security)])
 async def upload_boxes_sentences(result_id: int, sentences: UploadFile = File(...), user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> result_schema.ResultShow:
+    """
+    Upload sentences associated with bounding boxes for a specific result.
+
+    Args:
+        result_id (int): The ID of the result to which the sentences belong.
+        sentences (UploadFile): The sentences file to upload.
+        user (auth_schema.TokenData): Current authenticated user.
+        ai_service (AIService): Dependency for AI operations.
+
+    Returns:
+        result_schema.ResultShow: The updated result with the sentences uploaded.
+
+    Raises:
+        HTTPException: If the result is not found.
+    """
     # check if the result exists
     result = ai_service.show(result_id)
     if not result:
@@ -79,6 +196,21 @@ async def upload_boxes_sentences(result_id: int, sentences: UploadFile = File(..
             # responses={200: {"content": {"image/png": {}}}},
             response_class=FileResponse)
 async def get_heatmap(result_id: int, label: int, user: auth_schema.TokenData = Depends(get_current_user), ai_service: AIService = Depends(get_ai_service)) -> FileResponse:
+    """
+    Retrieve a heatmap for a specific result and label.
+
+    Args:
+        result_id (int): The ID of the result to retrieve the heatmap for.
+        label (int): The label for which to generate the heatmap (0-7).
+        user (auth_schema.TokenData): Current authenticated user.
+        ai_service (AIService): Dependency for AI operations.
+
+    Returns:
+        FileResponse: The heatmap image.
+
+    Raises:
+        HTTPException: If the label is invalid or the result is not found.
+    """
     if label > 7 or label < 0:
         raise HTTPException(status_code=400, detail="Invalid label")
     

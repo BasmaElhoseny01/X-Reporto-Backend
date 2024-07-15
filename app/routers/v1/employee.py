@@ -23,6 +23,19 @@ router = APIRouter(
             responses={401: {"model": error_schema.Error},
                        200: {"description": "User retrieved successfully"}})
 async def read_me(user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service) ) -> employee_schema.EmployeeShow:
+    """
+    Retrieve the currently authenticated user's employee details.
+
+    Args:
+    - user (auth_schema.TokenData): The current authenticated user.
+    - employee_Service (EmployeeService): The employee service dependency.
+
+    Returns:
+    - employee_schema.EmployeeShow: The details of the authenticated employee.
+
+    Raises:
+    - HTTPException: If authentication fails.
+    """
     employee = employee_Service.show(user.id)
     return employee
 
@@ -33,6 +46,23 @@ async def read_me(user: auth_schema.TokenData  = Depends(get_current_user), empl
                        200: {"description": "Employees retrieved successfully"},
                        401: {"model": error_schema.Error}})
 async def read_employees(type: OccupationEnum = None ,limit: int = 10, skip: int = 0, sort: str = None,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service) ) -> List[employee_schema.EmployeeShow]:
+    """
+    Retrieve a list of employees with optional filters.
+
+    Args:
+    - type (OccupationEnum): The occupation type to filter employees.
+    - limit (int): The number of employees to retrieve.
+    - skip (int): The number of employees to skip.
+    - sort (str): The field to sort by.
+    - user (auth_schema.TokenData): The current authenticated user.
+    - employee_Service (EmployeeService): The employee service dependency.
+
+    Returns:
+    - List[employee_schema.EmployeeShow]: A list of employees.
+
+    Raises:
+    - HTTPException: If authentication fails or if the request is invalid.
+    """
     employees = employee_Service.get_all(type, limit, skip, sort)
     return employees
 
@@ -43,6 +73,21 @@ async def read_employees(type: OccupationEnum = None ,limit: int = 10, skip: int
                         201: {"description": "Employee created successfully"},
                         401: {"model": error_schema.Error}})
 async def create_employees(request: employee_schema.EmployeeCreate,user: auth_schema.TokenData  = Depends(get_current_user), authentication_service: AuthenticationService = Depends(get_authentication_service) ,employee_Service: EmployeeService = Depends(get_employee_service)) -> employee_schema.Employee:
+    """
+    Create a new employee.
+
+    Args:
+    - request (employee_schema.EmployeeCreate): The employee creation request.
+    - user (auth_schema.TokenData): The current authenticated user.
+    - authentication_service (AuthenticationService): The authentication service dependency.
+    - employee_Service (EmployeeService): The employee service dependency.
+
+    Returns:
+    - employee_schema.Employee: The created employee.
+
+    Raises:
+    - HTTPException: If the user is not authorized, if the password is weak, or if the username already exists.
+    """
     if user.role != "admin" and user.role != "manager":
         print(user.role)
         raise HTTPException(status_code=401, detail="You are not authorized to create an employee")
@@ -73,6 +118,20 @@ async def create_employees(request: employee_schema.EmployeeCreate,user: auth_sc
                          200: {"description": "Employee retrieved successfully"},
                          401: {"model": error_schema.Error}})
 async def read_employee(employee_id: int,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service)) -> employee_schema.EmployeeShow:
+    """
+    Retrieve a single employee by their ID.
+
+    Args:
+    - employee_id (int): The ID of the employee to retrieve.
+    - user (auth_schema.TokenData): The current authenticated user.
+    - employee_Service (EmployeeService): The employee service dependency.
+
+    Returns:
+    - employee_schema.EmployeeShow: The details of the requested employee.
+
+    Raises:
+    - HTTPException: If the employee is not found.
+    """
     employee = employee_Service.show(employee_id)
     if not employee:
         raise HTTPException(status_code=404, detail=f"Employee with id {employee_id} not found")
@@ -85,6 +144,21 @@ async def read_employee(employee_id: int,user: auth_schema.TokenData  = Depends(
                          200: {"description": "Employee updated successfully"},
                          401: {"model": error_schema.Error}})
 async def update_employee(employee_id: int, request: employee_schema.EmployeeUpdate,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service)) -> employee_schema.EmployeeShow:
+    """
+    Update an existing employee by their ID.
+
+    Args:
+    - employee_id (int): The ID of the employee to update.
+    - request (employee_schema.EmployeeUpdate): The employee update request.
+    - user (auth_schema.TokenData): The current authenticated user.
+    - employee_Service (EmployeeService): The employee service dependency.
+
+    Returns:
+    - employee_schema.EmployeeShow: The updated employee details.
+
+    Raises:
+    - HTTPException: If the employee is not found.
+    """
     employee = employee_Service.update(employee_id, request.dict())
     return employee
 
@@ -95,6 +169,20 @@ async def update_employee(employee_id: int, request: employee_schema.EmployeeUpd
                             204: {"description": "Employee deleted successfully"},
                             401: {"model": error_schema.Error}})
 async def delete_employee(employee_id: int,user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service)) -> bool:
+    """
+    Delete an employee by their ID.
+
+    Args:
+    - employee_id (int): The ID of the employee to delete.
+    - user (auth_schema.TokenData): The current authenticated user.
+    - employee_Service (EmployeeService): The employee service dependency.
+
+    Returns:
+    - bool: True if the employee was deleted, False otherwise.
+
+    Raises:
+    - HTTPException: If the user is not authorized or if the employee is not found.
+    """
     if user.role != "admin":
         raise HTTPException(status_code=401, detail="You are not authorized to delete an employee")
     deleted = employee_Service.destroy(employee_id)
@@ -109,6 +197,25 @@ async def delete_employee(employee_id: int,user: auth_schema.TokenData  = Depend
                          200: {"description": "Studies retrieved successfully"},
                          401: {"model": error_schema.Error}})
 async def read_employee_studies(employee_id: int,status: StatusEnum = None, limit: int = 10, skip: int = 0, sort: str = None, user: auth_schema.TokenData  = Depends(get_current_user), employee_Service: EmployeeService = Depends(get_employee_service), study_service: StudyService = Depends(get_study_service)) -> List[study_schema.StudyShow]:
+    """
+    Retrieve the studies assigned to a specific doctor by their employee ID.
+
+    Args:
+    - employee_id (int): The ID of the doctor whose studies are to be retrieved.
+    - status (StatusEnum): The status of the studies to filter by.
+    - limit (int): The number of studies to retrieve.
+    - skip (int): The number of studies to skip.
+    - sort (str): The field to sort by.
+    - user (auth_schema.TokenData): The current authenticated user.
+    - employee_Service (EmployeeService): The employee service dependency.
+    - study_Service (StudyService): The study service dependency.
+
+    Returns:
+    - List[study_schema.StudyShow]: A list of studies assigned to the doctor.
+
+    Raises:
+    - HTTPException: If the doctor is not found or if the employee is not a doctor.
+    """
     employee = employee_Service.show(employee_id)
     if not employee:
         raise HTTPException(status_code=404, detail=f"Doctor with id {employee_id} not found")
