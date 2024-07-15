@@ -77,6 +77,7 @@ async def login(request: authentication_schema.Login,authentication_service: Aut
         HTTPException: If the username is invalid or the password is incorrect.
     """
     # check if the user exists
+    print(request.username)
     employee = employee_Service.get_by_username(request.username)
 
     if not employee:

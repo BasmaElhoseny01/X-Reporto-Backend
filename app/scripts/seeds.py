@@ -148,7 +148,7 @@ if __name__ == "__main__":
                 study_name="archived study",
                 notes="Notes 1",
                 severity=1,
-                # xray_path="xray.png",
+                xray_path="static/studies/1/xray.jpg",
                 xray_type="type1",
                 status = StatusEnum.archived,
                 employee_id=employee.id
@@ -159,17 +159,17 @@ if __name__ == "__main__":
                 study_name="Study 2",
                 notes="Notes 2",
                 severity=2,
-                # xray_path="xray.png",
+                xray_path="static/studies/2/xray.jpg",
                 xray_type="type2",
-                status = StatusEnum.new
+                status = StatusEnum.completed
             ),
             Study(
                 patient_id=patients[2].id,
                 employee_id=employee.id,
                 study_name="Study 3",
                 notes="Notes 3",
-                severity=3,
-                # xray_path="xray.png",
+                severity=-1,
+                xray_path="static/studies/3/xray.jpg",
                 xray_type="type3",
                 status = StatusEnum.new
             ),
@@ -177,34 +177,45 @@ if __name__ == "__main__":
                 patient_id=patients[0].id,
                 doctor_id=doctor1.id,
                 employee_id=employee.id,
-                study_name="completed study",
+                study_name="study 4",
                 notes="Notes 1",
-                severity=2,
-                # xray_path="xray.png",
+                severity=-1,
+                xray_path="static/studies/4/xray.jpg",
                 xray_type="type1",
-                status = StatusEnum.completed
+                status = StatusEnum.new
             ),
             Study(
                 patient_id=patients[0].id,
                 doctor_id=doctor1.id,
                 employee_id=employee.id,
-                study_name="in progress study",
+                study_name="in progress study 5",
                 notes="Notes 1",
-                severity=1.8,
-                # xray_path="xray.png",
+                severity=1.7,
+                xray_path="static/studies/5/xray.jpg",
                 xray_type="type1",
                 status = StatusEnum.in_progress
             ),
             Study(
                 patient_id=patients[0].id,
                 employee_id=employee.id,
-                study_name="new study",
+                study_name="new study 6",
                 notes="Notes 1",
                 severity=1.5,
-                # xray_path="xray.png",
+                xray_path="static/studies/6/xray.jpg",
                 xray_type="type1",
                 status = StatusEnum.new
-            )
+            ),
+            Study(
+                patient_id=patients[0].id,
+                doctor_id=doctor1.id,
+                employee_id=employee.id,
+                study_name="new study 7",
+                notes="Notes 1",
+                severity=-1,
+                xray_path="static/studies/7/xray.jpg",
+                xray_type="type1",
+                status = StatusEnum.new
+            ),
         ]
 
         for study in studies:
@@ -212,38 +223,39 @@ if __name__ == "__main__":
             db.commit()
             db.refresh(study)
 
-        # list of results
-        results = [
-            Result(
-                study_id=studies[0].id,
-                result_name="Result 1",
-                report_path="report.pdf",
-                heatmap_path="heatmap.png",
-                region_path="region.png",
-                type= ResultTypeEnum.llm
-            ),
-            Result(
-                study_id=studies[1].id,
-                result_name="Result 2",
-                report_path="report.pdf",
-                heatmap_path="heatmap.png",
-                region_path="region.png",
-                type= ResultTypeEnum.custom
-            ),
-            Result(
-                study_id=studies[2].id,
-                result_name="Result 3",
-                report_path="report.pdf",
-                heatmap_path="heatmap.png",
-                region_path="region.png",
-                type= ResultTypeEnum.template
-            )
-        ]
+        # # list of results
+        # results = [
+        #     Result(
+        #         study_id=studies[0].id,
+        #         result_name="Result 1",
+        #         report_path="report.pdf",
+        #         heatmap_path="heatmap.png",
+        #         region_path="region.png",
+        #         type= ResultTypeEnum.llm
+        #     ),
+        #     Result(
+        #         study_id=studies[1].id,
+        #         result_name="Result 2",
+        #         report_path="report.pdf",
+        #         heatmap_path="heatmap.png",
+        #         region_path="region.png",
+        #         type= ResultTypeEnum.custom
+        #     ),
+        #     Result(
+        #         study_id=studies[2].id,
+        #         result_name="Result 3",
+        #         report_path="report.pdf",
+        #         heatmap_path="heatmap.png",
+        #         region_path="region.png",
+        #         type= ResultTypeEnum.template
+        #     )
+        # ]
 
-        for result in results:
-            db.add(result)
-            db.commit()
-            db.refresh(result)
+        # for result in results:
+        #     db.add(result)
+        #     db.commit()
+        #     db.refresh(result)
+
     except Exception as e:
         print(e)
     finally:
