@@ -153,8 +153,9 @@ class AIService:
         for study in studies:
             try:
                 if study.xray_path is None:
+                    print("Xray path not found")
                     continue
-                if study.severity <= 0:
+                if study.severity > 0:
                     continue
                 # fetch template result for the study
                 template_result = self.result_repo.get_result_by_study_type(study.id, ResultTypeEnum.template)

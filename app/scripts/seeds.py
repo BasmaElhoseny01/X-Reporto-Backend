@@ -207,7 +207,6 @@ if __name__ == "__main__":
             ),
             Study(
                 patient_id=patients[0].id,
-                doctor_id=doctor1.id,
                 employee_id=employee.id,
                 study_name="new study 7",
                 notes="Notes 1",

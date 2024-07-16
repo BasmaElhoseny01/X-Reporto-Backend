@@ -1,8 +1,8 @@
-The patient has Atelectasis with a confidence of 81.79%. The findings are primarily located in the trachea. 
-The patient has Cardiomegaly with a confidence of 91.54%. The findings are primarily located in the cardiac silhouette. 
-The patient has Edema with a confidence of 90.88%. The findings are primarily located in the cardiac silhouette. 
-The patient has Lung Opacity with a confidence of 78.80%. The findings are primarily located in the cardiac silhouette. 
-The patient does not have No Finding with a confidence of 97.42%. 
-The patient has Pleural Effusion with a confidence of 97.91%. The findings are primarily located in the trachea. 
-The patient has Pneumonia with a confidence of 81.92%. The findings are primarily located in the left hemidiaphragm. 
-The patient has Support Devices with a confidence of 80.37%. The findings are primarily located in the cardiac silhouette. 
+The patient has Atelectasis with a confidence of 58.53%. The findings are primarily located in the right apical zone. 
+The patient does not have Cardiomegaly with a confidence of 16.61%. 
+The patient has Edema with a confidence of 68.16%. The findings are primarily located in the left mid lung zone. 
+The patient has Lung Opacity with a confidence of 54.21%. The findings are primarily located in the left hemidiaphragm. 
+The patient does not have No Finding with a confidence of 87.20%. 
+The patient has Pleural Effusion with a confidence of 93.36%. The findings are primarily located in the left lower lung zone. 
+The patient has Pneumonia with a confidence of 72.28%. The findings are primarily located in the spine. 
+The patient has Support Devices with a confidence of 86.90%. The findings are primarily located in the left hemidiaphragm. 
