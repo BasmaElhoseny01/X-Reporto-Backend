@@ -155,6 +155,7 @@ if __name__ == "__main__":
             ),
             Study(
                 patient_id=patients[1].id,
+                doctor_id=doctor1.id,
                 employee_id=employee.id,
                 study_name="Study 2",
                 notes="Notes 2",
@@ -189,7 +190,7 @@ if __name__ == "__main__":
                 employee_id=employee.id,
                 study_name="in progress study 5",
                 notes="Notes 1",
-                severity=1.7,
+                severity=-1,
                 xray_path="static/studies/5/xray.jpg",
                 xray_type="type1",
                 status = StatusEnum.in_progress
@@ -199,7 +200,7 @@ if __name__ == "__main__":
                 employee_id=employee.id,
                 study_name="new study 6",
                 notes="Notes 1",
-                severity=1.5,
+                severity=-1,
                 xray_path="static/studies/6/xray.jpg",
                 xray_type="type1",
                 status = StatusEnum.new
