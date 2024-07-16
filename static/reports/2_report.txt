@@ -1,0 +1,8 @@
+The patient has Atelectasis with a confidence of 1.39%. The findings are primarily located in the upper mediastinum. 
+The patient has Cardiomegaly with a confidence of 65.81%. The findings are primarily located in the abdomen. 
+The patient has Edema with a confidence of 95.78%. The findings are primarily located in the right lower lung zone. 
+The patient does not have Lung Opacity with a confidence of 30.19%. 
+The patient does not have No Finding with a confidence of 87.35%. 
+The patient has Pleural Effusion with a confidence of 67.77%. The findings are primarily located in the upper mediastinum. 
+The patient does not have Pneumonia with a confidence of 31.89%. 
+The patient has Support Devices with a confidence of 76.74%. The findings are primarily located in the right hilar structures. 
